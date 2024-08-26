@@ -1,0 +1,16 @@
+.depot-mwj {
+  box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2); /* Red shadow */
+}
+
+.depot-SGAM {
+  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.2); /* Green shadow */
+}
+
+.depot-behr {
+  box-shadow: 0 4px 8px rgba(0, 0, 255, 0.2); /* Blue shadow */
+}
+
+/* Default styling for other depots */
+tr {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
