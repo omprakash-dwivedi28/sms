@@ -197,7 +197,7 @@ function DepotMaster() {
             </InputGroup>
 
             <InputGroup className="mb-3">
-              <InputGroup.Text>Staff Capacity</InputGroup.Text>
+              <InputGroup.Text>Total SS</InputGroup.Text>
               <Form.Control
                 name="staff_capacity"
                 value={formData.staff_capacity}
@@ -207,7 +207,7 @@ function DepotMaster() {
             </InputGroup>
 
             <InputGroup className="mb-3">
-              <InputGroup.Text>Staff Available</InputGroup.Text>
+              <InputGroup.Text>Total MOR</InputGroup.Text>
               <Form.Control
                 name="staff_avail"
                 value={formData.staff_avail}
@@ -219,7 +219,7 @@ function DepotMaster() {
             </InputGroup>
 
             <InputGroup className="mb-3">
-              <InputGroup.Text>Staff Required</InputGroup.Text>
+              <InputGroup.Text>Total vacancy</InputGroup.Text>
               <Form.Control
                 name="staff_required"
                 value={formData.staff_required}
@@ -229,31 +229,34 @@ function DepotMaster() {
             </InputGroup>
 
             <Container>
-              <h5 className="text-center mt-4 mb-3">Designation-wise Posts</h5>
+              <h5 className="text-center mt-4 mb-3">Pin pointing position</h5>
               <Row className="mb-2">
                 {/* Column headers */}
-                <Col md={6}>
+                <Col md={3}>
                   <strong>Designation</strong>
                 </Col>
-                <Col md={6}>
-                  <strong>Senction Posts</strong>
+                <Col md={3}>
+                  <strong>Sanctioned Strength</strong>
                 </Col>
-                {/* <Col md={4}>
-                  <strong>Available Posts</strong>
-                </Col> */}
+                <Col md={3}>
+                  <strong>MOR</strong>
+                </Col>
+                <Col md={3}>
+                  <strong>Vacancy</strong>
+                </Col>
               </Row>
 
               {/* Designation rows */}
               {formData.designationPosts.length > 0 &&
                 formData.designationPosts.map((desg, index) => (
                   <Row key={desg.desg_id} className="mb-12">
-                    <Col md={6}>
+                    <Col md={3}>
                       <InputGroup.Text>{desg.desg_name}</InputGroup.Text>
                     </Col>
-                    <Col md={6}>
+                    <Col md={3}>
                       <Form.Control
                         type="number"
-                        placeholder="Section Posts"
+                        placeholder="sanctioned strength"
                         value={desg.section_posts}
                         onChange={(e) =>
                           handleDesignationChange(
@@ -266,10 +269,10 @@ function DepotMaster() {
                         required
                       />
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
                       <Form.Control
                         type="number"
-                        placeholder="Available Posts"
+                        placeholder="MOR"
                         value={desg.available_posts}
                         onChange={(e) =>
                           handleDesignationChange(
@@ -279,8 +282,15 @@ function DepotMaster() {
                           )
                         }
                         aria-label="available_posts"
+                      />
+                    </Col>
+                    <Col md={3}>
+                      <Form.Control
+                        type="number"
+                        placeholder="vacancy"
+                        value={desg.section_posts - desg.available_posts} // Correct the subtraction
+                        aria-label="vacancy"
                         readOnly
-                        hidden
                       />
                     </Col>
                   </Row>

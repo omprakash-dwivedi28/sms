@@ -25,6 +25,8 @@ function EmpMaster() {
     skills: [],
     skillRatings: {},
     exp: "",
+    education: "",
+    achivment: "",
   });
 
   const [selectedDepot, setSelectedDepot] = useState("");
@@ -32,10 +34,11 @@ function EmpMaster() {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [selectedDesg, setSelectedDesg] = useState("");
 
-  const { depots, skills, gps, desgs } = useGlobalContext();
+  const { depots, skills, gps, desgs, qualifications } = useGlobalContext();
   const [responseMessage, setResponseMessage] = useState("");
   const [isPFNoAvailable, setIsPFNoAvailable] = useState(true);
   const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
+  const [selectededu, setSelectedEdu] = useState("");
 
   // console.log("desgs", desgs);
 
@@ -69,15 +72,6 @@ function EmpMaster() {
     }
   };
 
-  // const handleSkillRatingChange = (skill, rating) => {
-  //   setFormData({
-  //     ...formData,
-  //     skillRatings: {
-  //       ...formData.skillRatings,
-  //       [skill]: rating,
-  //     },
-  //   });
-  // };
   const handleSkillRatingChange = (skill, rating) => {
     setFormData((prevData) => {
       const newSkillRatings = {
@@ -92,7 +86,6 @@ function EmpMaster() {
     });
   };
   // useEffect(() => calculateAverageRating()[handleSkillRatingChange]);
-
   const checkPFNoAvailability = async (pfNo) => {
     try {
       const pfno_flag = true;
@@ -214,6 +207,8 @@ function EmpMaster() {
           skills: [],
           skillRatings: {},
           exp: "",
+          education: "",
+          achivment: "",
         });
         setSelectedDepot("");
         setSelectedGP("");
@@ -244,7 +239,13 @@ function EmpMaster() {
       gp: e.target.value,
     });
   };
-
+  const handleEduChange = (e) => {
+    setSelectedEdu(e.target.value);
+    setFormData({
+      ...formData,
+      education: e.target.value,
+    });
+  };
   const handleLevelChange = (e) => {
     setSelectedLevel(e.target.value);
     setFormData({
@@ -260,7 +261,87 @@ function EmpMaster() {
       post: e.target.value,
     });
   };
+  const calculateRetirementDate = (dob, doa) => {
+    const dobDate = new Date(dob);
+    const doaDate = new Date(doa);
 
+    const retirementAgeDate = new Date(dobDate);
+    retirementAgeDate.setFullYear(dobDate.getFullYear() + 60);
+
+    const retirementServiceDate = new Date(doaDate);
+    retirementServiceDate.setFullYear(doaDate.getFullYear() + 35);
+
+    let dor =
+      retirementAgeDate < retirementServiceDate
+        ? retirementAgeDate
+        : retirementServiceDate;
+
+    const birthMonth = dobDate.getMonth();
+    const birthDay = dobDate.getDate();
+
+    if (birthDay > 7) {
+      dor = new Date(dor.getFullYear(), birthMonth + 1, 0);
+    } else {
+      dor = new Date(dor.getFullYear(), birthMonth, 0);
+    }
+
+    // Format the output to YYYY-MM-DD
+    const formattedDor = `${dor.getFullYear()}-${(dor.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${dor.getDate().toString().padStart(2, "0")}`;
+    return formattedDor;
+  };
+
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+  //   const year = date.getFullYear();
+
+  //   return `${day}/${month}/${year}`;
+  // };
+  useEffect(() => {
+    const { dob, doa } = formData;
+
+    if (dob && doa) {
+      const dor = calculateRetirementDate(dob, doa);
+      // console.log("dor>>>>>>>", dor);
+      setFormData((prevData) => ({
+        ...prevData,
+        dor,
+      }));
+    }
+  }, [formData.dob, formData.doa]);
+
+  const calculateYearsOfExperience = (doa) => {
+    const doaDate = new Date(doa); // Date of Appointment or start date
+    const currentDate = new Date(); // Current date
+    console.log("");
+    // Calculate the difference in years
+    let yearsOfExperience = currentDate.getFullYear() - doaDate.getFullYear();
+
+    // Adjust if the current date is before the anniversary of the start date this year
+    const monthDiff = currentDate.getMonth() - doaDate.getMonth();
+    const dayDiff = currentDate.getDate() - doaDate.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      yearsOfExperience--;
+    }
+    console.log(yearsOfExperience);
+    return yearsOfExperience;
+  };
+
+  useEffect(() => {
+    const { doa } = formData;
+    if (doa) {
+      const exp = calculateYearsOfExperience(doa);
+
+      setFormData((prevData) => ({
+        ...prevData,
+        exp,
+      }));
+    }
+  }, [formData.doa]);
   return (
     <div className="d-flex justify-content-center vh-100 bg-light">
       <Card
@@ -407,6 +488,7 @@ function EmpMaster() {
             </InputGroup>
             <InputGroup className="mb-3">
               <InputGroup.Text>DOR</InputGroup.Text>
+              {console.log("dor:::::::::::::::", formData.dor)}
               <Form.Control
                 name="dor"
                 type="date"
@@ -463,7 +545,7 @@ function EmpMaster() {
                     {formData.skills.includes(skill.skill_name) && (
                       <Form.Control
                         type="number"
-                        placeholder="Rate 1-5"
+                        placeholder="Rate 1-10"
                         value={formData.skillRatings[skill.skill_name] || ""}
                         onChange={(e) =>
                           handleSkillRatingChange(
@@ -487,6 +569,32 @@ function EmpMaster() {
                 value={formData.exp}
                 onChange={handleChange}
                 aria-label="Experience"
+                required
+              />
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <Form.Select
+                aria-label="Select Education Qualification"
+                name="education"
+                value={selectededu}
+                onChange={handleEduChange}
+                className="custom-select"
+              >
+                <option value="">Select Education Qualification</option>
+                {qualifications?.map((quali) => (
+                  <option key={quali.q_id} value={quali.quali_name}>
+                    {quali.quali_name}
+                  </option>
+                ))}
+              </Form.Select>
+            </InputGroup>
+            <InputGroup className="mb-3">
+              <InputGroup.Text>Achivement</InputGroup.Text>
+              <Form.Control
+                name="achivment"
+                value={formData.achivment}
+                onChange={handleChange}
+                aria-label="achivment"
                 required
               />
             </InputGroup>

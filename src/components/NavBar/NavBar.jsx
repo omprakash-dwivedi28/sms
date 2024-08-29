@@ -35,6 +35,9 @@ function NavBar() {
                   <Nav.Link href="/empAnalysis">
                     Employee Transfer Analysis{" "}
                   </Nav.Link>
+                  <Nav.Link href="/EmpTransferHistori">
+                    Employee Transfer History{" "}
+                  </Nav.Link>
                   <Nav.Link href="/depotWiseAnalysis">
                     All Depot Analysis{" "}
                   </Nav.Link>

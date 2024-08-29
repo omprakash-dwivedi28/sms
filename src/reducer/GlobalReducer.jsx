@@ -81,6 +81,26 @@ const GlobalReducer = (state, action) => {
         desg_loding: false,
         desg_error: true,
       };
+
+    //for Qualification
+    case "GET_QUALI_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        quali_loading: true,
+      };
+
+    case "GET_QUALI_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        quali_loading: false,
+        qualifications: action.payload,
+      };
+    case "GET_QUALI_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        quali_loading: false,
+        quali_error: true,
+      };
     default:
       throw new Error(`No Matching "${action.type}" - action type`);
   }

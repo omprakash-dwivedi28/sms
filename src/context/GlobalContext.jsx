@@ -13,6 +13,12 @@ const initialState = {
   skills: null,
   skill_error: false,
 
+  //for qualification init
+
+  quali_loading: false,
+  qualifications: null,
+  quali_error: false,
+
   //for gp and levels master init
 
   gp_loading: false,
@@ -67,6 +73,26 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  const fetchQuaification = async () => {
+    // console.log("skill data");
+    const edu_flag = true;
+    dispatch({ type: "GET_QUALI_MASTER_INFO_BEGIN" });
+    try {
+      const response = await fetch(
+        `https://railwaymcq.com/sms/gp_level.php?edu_flag=${edu_flag}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      // console.log(data);
+      dispatch({ type: "GET_QUALI_MASTER_INFO_SUCCESS", payload: data });
+    } catch (error) {
+      console.error("Error fetching QUALI_MASTER info:", error);
+      dispatch({ type: "GET_QUALI_MASTER_INFO_ERROR" });
+    }
+  };
+
   const fetchGPMaster = async () => {
     // console.log("skill data");
 
@@ -108,6 +134,7 @@ export const GlobalProvider = ({ children }) => {
     fetchSkillMaster();
     fetchGPMaster();
     fetchDESGMaster();
+    fetchQuaification();
   }, []);
 
   return (
@@ -118,6 +145,7 @@ export const GlobalProvider = ({ children }) => {
         fetchSkillMaster,
         fetchGPMaster,
         fetchDESGMaster,
+        fetchQuaification,
       }}
     >
       {children}

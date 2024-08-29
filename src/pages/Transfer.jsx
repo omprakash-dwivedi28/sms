@@ -27,11 +27,11 @@ function Transfer() {
   const [averageRating, setAverageRating] = useState(0);
   const [ToaverageRating, setToAverageRating] = useState(0);
   const [fromselectedCurrentStaff, setselectedfromCurrentStaff] = useState(0);
-  const [toTotalStaff, setToTotalStaff] = useState(0);
 
-  // Fetch data from depot APIs (similar to your current logic)
+  const handleToDepotChange = (e) => {
+    setSelectedToDepot(e.target.value);
+  };
   useEffect(() => {
-    // Fetch from depot data
     if (selectedFromDepot) {
       fetch(
         `https://railwaymcq.com/sms/employeeTransferOperaton.php?depot_id=${selectedFromDepot}`
@@ -49,7 +49,6 @@ function Transfer() {
   }, [selectedFromDepot]);
 
   useEffect(() => {
-    // Fetch to depot data
     if (selectedToDepot) {
       fetch(
         `https://railwaymcq.com/sms/employeeTransferOperaton.php?depot_id=${selectedToDepot}`
@@ -66,15 +65,10 @@ function Transfer() {
     }
   }, [selectedToDepot]);
 
-  // Handle depot selection
   const handleFromDepotChange = (e) => {
     setSelectedFromDepot(e.target.value);
   };
-
-  const handleToDepotChange = (e) => {
-    setSelectedToDepot(e.target.value);
-  };
-
+  useEffect(() => {}, []);
   const handleEmployeeSelection = (e, employee) => {
     let updatedSelectedEmployees;
     if (e.target.checked) {
@@ -86,6 +80,7 @@ function Transfer() {
     }
 
     setSelectedEmployees(updatedSelectedEmployees);
+    setselectedfromCurrentStaff(updatedSelectedEmployees.length);
 
     const remainings = fromDepotEmployees.filter(
       (fromEmp) =>
@@ -94,7 +89,6 @@ function Transfer() {
         )
     );
 
-    console.log(remainings);
     const selectedFromDepotRatings = [...remainings].reduce(
       (sum, emp) => sum + parseFloat(emp.rating || 0),
       0
@@ -107,25 +101,23 @@ function Transfer() {
         ? selectedFromDepotRatings / selectedFromTotalStaff
         : 0;
     setAverageRating(fromAvgRating.toFixed(2));
-    setselectedfromCurrentStaff(selectedFromTotalStaff);
 
     const combinedEmployeesNow = [
       ...toDepotEmployees,
       ...updatedSelectedEmployees,
     ];
 
-    console.log("combinedEmployeesNow", combinedEmployeesNow);
     const combinedToDepotRatings = [...combinedEmployeesNow].reduce(
       (sum, emp) => sum + parseFloat(emp.rating || 0),
       0
     );
-    console.log("combinedEmployees.length", combinedEmployees.length);
     const toAvgRating = combinedEmployees.length
       ? combinedToDepotRatings / combinedEmployeesNow.length
       : 0;
     setCombinedEmployees(combinedEmployeesNow);
 
     setToAverageRating(toAvgRating.toFixed(2));
+    // console.log("toAvgRating", toAvgRating);
   };
 
   const handleTransfer = () => {
@@ -145,7 +137,7 @@ function Transfer() {
       ).length;
       return {
         ...post,
-        available_posts: post.available_posts - postCount,
+        mor: Number(post.mor) - postCount,
       };
     });
 
@@ -155,7 +147,7 @@ function Transfer() {
       ).length;
       return {
         ...post,
-        available_posts: Number(post.available_posts) + postCount,
+        mor: Number(post.mor) + postCount,
       };
     });
 
@@ -167,6 +159,9 @@ function Transfer() {
     setSelectedEmployees([]);
     setFromPostWiseData(updatedFromPostWiseData);
     setToPostWiseData(updatedToPostWiseData);
+    console.log("updatedEmployees", updatedEmployees);
+    console.log("toDepot", selectedToDepot);
+    console.log("fromDepot", selectedFromDepot);
 
     fetch("https://railwaymcq.com/sms/update_transfer.php", {
       method: "POST",
@@ -177,15 +172,18 @@ function Transfer() {
         employees: updatedEmployees,
         fromDepot: selectedFromDepot,
         toDepot: selectedToDepot,
+        toDepotName: toDepotEmployees[0].depot_name,
         fromPostWiseData: updatedFromPostWiseData,
         toPostWiseData: updatedToPostWiseData,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         if (data.success) {
           console.log("Transfer successful");
         } else {
+          console.log("response.data", data);
           console.error("Error transferring employees:", data.error);
         }
       })
@@ -250,7 +248,7 @@ function Transfer() {
             </Card.Body>
           </Card>
           <Card className="mt-4">
-            <Card.Header>From Depot Analysis</Card.Header>
+            <Card.Header>Before Transfer</Card.Header>
             <Card.Body>
               {fromDepotData && (
                 <div>
@@ -258,50 +256,59 @@ function Transfer() {
                     <strong>Depot Size:</strong> {fromDepotData.depot_size} tkm
                   </p>
                   <p>
-                    <strong>Staff Capacity:</strong>{" "}
-                    {fromDepotData.staff_capacity}
+                    <strong>SS:</strong> {fromDepotData.staff_capacity}
                   </p>
                   <p>
-                    <strong>Staff Available:</strong>{" "}
-                    {fromDepotData.staff_avail}
+                    <strong>MOR:</strong> {fromDepotData.staff_avail}
                   </p>
                   <p>
-                    <strong>Staff Required:</strong>{" "}
+                    <strong>Vacancy:</strong>{" "}
                     {fromDepotData.staff_capacity - fromDepotData.staff_avail}
                   </p>
                   <p>
-                    <strong>Previous Average Rating:</strong>{" "}
+                    <strong>Previous Depot. Rating:</strong>{" "}
                     {fromDepotData.average_rating}
                   </p>
                 </div>
               )}
             </Card.Body>
+          </Card>
+          <Card>
+            <Card.Header>After Transfer</Card.Header>
             <Card.Body>
               <h6 className="mt-4"> Current Depot Rating: {averageRating}</h6>
               <h6 className="mt-4">
                 {" "}
                 Current Depot. staff:{" "}
-                {fromDepotData.staff_avail - fromselectedCurrentStaff}
+                {Number(fromDepotData.staff_avail) -
+                  Number(fromselectedCurrentStaff)}
+                {/* {console.log(
+                  "fromselectedCurrentStaff",
+                  fromselectedCurrentStaff
+                )} */}
               </h6>
             </Card.Body>
           </Card>
           <Card className="mt-4">
             <Card.Body>
               <h6 className="text-secondary mb-3">
-                <strong>Post-wise Data</strong>
+                <strong>Pin pointing position Table</strong>
               </h6>
               <Container>
                 <ul className="skill-list">
                   <Row className="mb-2">
                     {/* Column headers */}
-                    <Col md={4}>
+                    <Col md={3}>
                       <strong>Designation</strong>
                     </Col>
-                    <Col md={4}>
-                      <strong>Senction Posts</strong>
+                    <Col md={3}>
+                      <strong>SS</strong>
                     </Col>
-                    <Col md={4}>
-                      <strong>Available Posts</strong>
+                    <Col md={3}>
+                      <strong>MOR</strong>
+                    </Col>
+                    <Col md={3}>
+                      <strong>Vacancy</strong>
                     </Col>
                   </Row>
                   {fromPostWiseData.map((post, index) => (
@@ -310,8 +317,8 @@ function Transfer() {
                         <Col name="Desg Name">
                           <strong>{post.desg_name}:</strong>
                         </Col>
-                        :<Col> {post.section_posts} </Col>:
-                        <Col>{post.available_posts}</Col>
+                        :<Col> {post.ss} </Col>:<Col>{post.mor}</Col>:
+                        <Col>{post.ss - post.mor}</Col>
                       </Row>
                     </li>
                   ))}
@@ -358,14 +365,6 @@ function Transfer() {
                 </InputGroup>
                 <h6>Employees</h6>
                 <Form>
-                  {/* {toDepotEmployees.map((employee) => (
-                    <Form.Check
-                      key={employee.emp_id}
-                      type="checkbox"
-                      label={`${employee.emp_name} (${employee.post})`}
-                      disabled
-                    />
-                  ))} */}
                   <Form>
                     <Table striped bordered hover>
                       <thead>
@@ -409,7 +408,7 @@ function Transfer() {
             </Card.Body>
           </Card>
           <Card className="mt-4">
-            <Card.Header>To Depot Analysis</Card.Header>
+            <Card.Header>Before Transfer</Card.Header>
             <Card.Body>
               {toDepotData && (
                 <div>
@@ -417,29 +416,27 @@ function Transfer() {
                     <strong>Depot Size:</strong> {toDepotData.depot_size} tkm
                   </p>
                   <p>
-                    <strong>Staff Capacity:</strong>{" "}
-                    {toDepotData.staff_capacity}
+                    <strong>SS:</strong> {toDepotData.staff_capacity}
                   </p>
                   <p>
-                    <strong>Staff Available:</strong>{" "}
-                    {Number(toDepotData.staff_avail)}
+                    <strong>MOR:</strong> {Number(toDepotData.staff_avail)}
                   </p>
                   <p>
-                    <strong>Staff Required:</strong>{" "}
+                    <strong>Vacancy:</strong>{" "}
                     {toDepotData.staff_capacity - toDepotData.staff_avail}
                   </p>
                   <p>
-                    <strong> Previous average Rating:</strong>{" "}
+                    <strong> Previous Depot. Rating:</strong>{" "}
                     {toDepotData.average_rating}
                   </p>
                 </div>
               )}
             </Card.Body>
+          </Card>
+          <Card>
+            <Card.Header>After Transfer</Card.Header>
             <Card.Body>
-              <h6 className="mt-4">
-                {" "}
-                Current Average Rating: {ToaverageRating}
-              </h6>
+              <h6 className="mt-4">Depot Rating: {ToaverageRating}</h6>
               <h6 className="mt-4">
                 {" "}
                 Current Depot staff:{" "}
@@ -451,20 +448,23 @@ function Transfer() {
           <Card className="mt-4">
             <Card.Body>
               <h6 className="text-secondary mb-3">
-                <strong>Post-wise Data</strong>
+                <strong>Pin pointing position Table</strong>
               </h6>
               <Container>
                 <ul className="skill-list">
                   <Row className="mb-2">
                     {/* Column headers */}
-                    <Col md={4}>
+                    <Col md={3}>
                       <strong>Designation</strong>
                     </Col>
-                    <Col md={4}>
-                      <strong>Senction Posts</strong>
+                    <Col md={3}>
+                      <strong>SS</strong>
                     </Col>
-                    <Col md={4}>
-                      <strong>Available Posts</strong>
+                    <Col md={3}>
+                      <strong>MOR</strong>
+                    </Col>
+                    <Col md={3}>
+                      <strong>Vacancy</strong>
                     </Col>
                   </Row>
                   {toPostWiseData.map((post, index) => (
@@ -473,8 +473,8 @@ function Transfer() {
                         <Col name="Desg Name">
                           <strong>{post.desg_name}:</strong>
                         </Col>
-                        :<Col> {post.section_posts} </Col>:
-                        <Col>{post.available_posts}</Col>
+                        :<Col> {post.ss} </Col>:<Col>{post.mor}</Col>:
+                        <Col>{post.ss - post.mor}</Col>
                       </Row>
                     </li>
                   ))}

@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import NavBar from "./components/NavBar/NavBar";
 import DepotMaster from "./pages/DepotMaster";
@@ -8,6 +7,7 @@ import EmpMaster from "./pages/EmpMaster";
 import EmpAnalysis from "./pages/empAnalysis";
 import DepotWiseAnalysis from "./pages/depotWiseAnalysis";
 import Transfer from "./pages/Transfer";
+import EmpTransferHistori from "./pages/EmpTransferHistori";
 
 // import PrivateRoute from "./components/PrivateRoute";
 
@@ -22,6 +22,7 @@ function App() {
           <Route path="/DepotMaster" element={<DepotMaster />} />
           <Route path="/EmpMaster" element={<EmpMaster />} />
           <Route path="/EmpAnalysis" element={<EmpAnalysis />} />
+          <Route path="/EmpTransferHistori" element={<EmpTransferHistori />} />
           <Route path="/DepotWiseAnalysis" element={<DepotWiseAnalysis />} />
           <Route path="/Transfer" element={<Transfer />} />
         </Routes>
