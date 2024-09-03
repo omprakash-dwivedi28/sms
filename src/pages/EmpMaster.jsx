@@ -27,6 +27,7 @@ function EmpMaster() {
     exp: "",
     education: "",
     achivment: "",
+    otherEducation: "", // Field for other education
   });
 
   const [selectedDepot, setSelectedDepot] = useState("");
@@ -39,8 +40,6 @@ function EmpMaster() {
   const [isPFNoAvailable, setIsPFNoAvailable] = useState(true);
   const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
   const [selectededu, setSelectedEdu] = useState("");
-
-  // console.log("desgs", desgs);
 
   const handleChange = async (e) => {
     const { name, value, type, checked } = e.target;
@@ -81,11 +80,9 @@ function EmpMaster() {
       return {
         ...prevData,
         skillRatings: newSkillRatings,
-        // rating: newSkillRatings // Update the rating field
       };
     });
   };
-  // useEffect(() => calculateAverageRating()[handleSkillRatingChange]);
   const checkPFNoAvailability = async (pfNo) => {
     try {
       const pfno_flag = true;
@@ -169,6 +166,14 @@ function EmpMaster() {
     if (!validateDates()) {
       return;
     }
+    const handleEduChange = (e) => {
+      const selectedEducation = e.target.value;
+      setSelectedEdu(selectedEducation);
+      setFormData({
+        ...formData,
+        education: selectedEducation,
+      });
+    };
 
     if (!isPFNoAvailable) {
       setResponseMessage(
@@ -209,6 +214,7 @@ function EmpMaster() {
           exp: "",
           education: "",
           achivment: "",
+          otherEducation: "",
         });
         setSelectedDepot("");
         setSelectedGP("");
@@ -279,33 +285,23 @@ function EmpMaster() {
     const birthMonth = dobDate.getMonth();
     const birthDay = dobDate.getDate();
 
-    if (birthDay > 7) {
+    if (birthDay > 1) {
       dor = new Date(dor.getFullYear(), birthMonth + 1, 0);
     } else {
       dor = new Date(dor.getFullYear(), birthMonth, 0);
     }
 
-    // Format the output to YYYY-MM-DD
     const formattedDor = `${dor.getFullYear()}-${(dor.getMonth() + 1)
       .toString()
       .padStart(2, "0")}-${dor.getDate().toString().padStart(2, "0")}`;
     return formattedDor;
   };
 
-  // const formatDate = (dateString) => {
-  //   const date = new Date(dateString);
-  //   const day = String(date.getDate()).padStart(2, "0");
-  //   const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
-  //   const year = date.getFullYear();
-
-  //   return `${day}/${month}/${year}`;
-  // };
   useEffect(() => {
     const { dob, doa } = formData;
 
     if (dob && doa) {
       const dor = calculateRetirementDate(dob, doa);
-      // console.log("dor>>>>>>>", dor);
       setFormData((prevData) => ({
         ...prevData,
         dor,
@@ -314,13 +310,12 @@ function EmpMaster() {
   }, [formData.dob, formData.doa]);
 
   const calculateYearsOfExperience = (doa) => {
-    const doaDate = new Date(doa); // Date of Appointment or start date
-    const currentDate = new Date(); // Current date
+    const doaDate = new Date(doa);
+    const currentDate = new Date();
     console.log("");
-    // Calculate the difference in years
+
     let yearsOfExperience = currentDate.getFullYear() - doaDate.getFullYear();
 
-    // Adjust if the current date is before the anniversary of the start date this year
     const monthDiff = currentDate.getMonth() - doaDate.getMonth();
     const dayDiff = currentDate.getDate() - doaDate.getDate();
 
@@ -522,7 +517,7 @@ function EmpMaster() {
                 value={formData.rating}
                 onChange={handleChange}
                 aria-label="Rating"
-                placeholder="Rate your employee 1-5, 5 is outstanding"
+                placeholder="Rate your employee 1-10, 10 is outstanding"
                 required
                 disabled
               />
@@ -554,7 +549,7 @@ function EmpMaster() {
                           )
                         }
                         min="1"
-                        max="5"
+                        max="10"
                         className="mt-2"
                       />
                     )}
@@ -588,6 +583,18 @@ function EmpMaster() {
                 ))}
               </Form.Select>
             </InputGroup>
+            {selectededu === "Other" && (
+              <InputGroup className="mb-3">
+                <InputGroup.Text>Specify Other Education</InputGroup.Text>
+                <Form.Control
+                  name="otherEducation"
+                  value={formData.otherEducation}
+                  onChange={handleChange}
+                  placeholder="Specific other education"
+                  required
+                />
+              </InputGroup>
+            )}
             <InputGroup className="mb-3">
               <InputGroup.Text>Achivement</InputGroup.Text>
               <Form.Control

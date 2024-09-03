@@ -71,6 +71,7 @@ function Transfer() {
   useEffect(() => {}, []);
   const handleEmployeeSelection = (e, employee) => {
     let updatedSelectedEmployees;
+
     if (e.target.checked) {
       updatedSelectedEmployees = [...selectedEmployees, employee];
     } else {
@@ -82,6 +83,7 @@ function Transfer() {
     setSelectedEmployees(updatedSelectedEmployees);
     setselectedfromCurrentStaff(updatedSelectedEmployees.length);
 
+    // Filter remaining employees in the "From Depot" (those not selected)
     const remainings = fromDepotEmployees.filter(
       (fromEmp) =>
         !updatedSelectedEmployees.some(
@@ -89,17 +91,18 @@ function Transfer() {
         )
     );
 
-    const selectedFromDepotRatings = [...remainings].reduce(
+    // Calculate average rating for remaining employees in "From Depot"
+    const selectedFromDepotRatings = remainings.reduce(
       (sum, emp) => sum + parseFloat(emp.rating || 0),
       0
     );
 
-    const selectedFromTotalStaff =
-      fromDepotEmployees.length - updatedSelectedEmployees.length;
+    const selectedFromTotalStaff = remainings.length;
     const fromAvgRating =
       selectedFromTotalStaff > 0
         ? selectedFromDepotRatings / selectedFromTotalStaff
         : 0;
+
     setAverageRating(fromAvgRating.toFixed(2));
 
     const combinedEmployeesNow = [
@@ -107,16 +110,19 @@ function Transfer() {
       ...updatedSelectedEmployees,
     ];
 
-    const combinedToDepotRatings = [...combinedEmployeesNow].reduce(
+    // Calculate average rating for "To Depot"
+    const combinedToDepotRatings = combinedEmployeesNow.reduce(
       (sum, emp) => sum + parseFloat(emp.rating || 0),
       0
     );
-    const toAvgRating = combinedEmployees.length
+
+    const toAvgRating = combinedEmployeesNow.length
       ? combinedToDepotRatings / combinedEmployeesNow.length
       : 0;
-    setCombinedEmployees(combinedEmployeesNow);
 
+    setCombinedEmployees(combinedEmployeesNow);
     setToAverageRating(toAvgRating.toFixed(2));
+
     // console.log("toAvgRating", toAvgRating);
   };
 
@@ -220,6 +226,7 @@ function Transfer() {
                     <thead>
                       <tr>
                         <th>Select</th>
+                        <th>Sr.No</th>
                         <th>Name</th>
                         <th>Post</th>
                         <th>Rating</th>
@@ -236,6 +243,7 @@ function Transfer() {
                               }
                             />
                           </td>
+                          <td>{employee.serial_no}</td>
                           <td>{employee.emp_name}</td>
                           <td>{employee.post}</td>
                           <td>{employee.rating}</td>
@@ -266,7 +274,7 @@ function Transfer() {
                     {fromDepotData.staff_capacity - fromDepotData.staff_avail}
                   </p>
                   <p>
-                    <strong>Previous Depot. Rating:</strong>{" "}
+                    <strong>Depot. Rating:</strong>{" "}
                     {fromDepotData.average_rating}
                   </p>
                 </div>
@@ -276,16 +284,12 @@ function Transfer() {
           <Card>
             <Card.Header>After Transfer</Card.Header>
             <Card.Body>
-              <h6 className="mt-4"> Current Depot Rating: {averageRating}</h6>
+              <h6 className="mt-4">Depot Rating: {averageRating}</h6>
               <h6 className="mt-4">
                 {" "}
-                Current Depot. staff:{" "}
+                Depot. staff:{" "}
                 {Number(fromDepotData.staff_avail) -
                   Number(fromselectedCurrentStaff)}
-                {/* {console.log(
-                  "fromselectedCurrentStaff",
-                  fromselectedCurrentStaff
-                )} */}
               </h6>
             </Card.Body>
           </Card>
@@ -426,8 +430,7 @@ function Transfer() {
                     {toDepotData.staff_capacity - toDepotData.staff_avail}
                   </p>
                   <p>
-                    <strong> Previous Depot. Rating:</strong>{" "}
-                    {toDepotData.average_rating}
+                    <strong>Depot. Rating:</strong> {toDepotData.average_rating}
                   </p>
                 </div>
               )}
@@ -439,7 +442,7 @@ function Transfer() {
               <h6 className="mt-4">Depot Rating: {ToaverageRating}</h6>
               <h6 className="mt-4">
                 {" "}
-                Current Depot staff:{" "}
+                Depot Staff:{" "}
                 {Number(toDepotData.staff_avail) + fromselectedCurrentStaff}
               </h6>
             </Card.Body>

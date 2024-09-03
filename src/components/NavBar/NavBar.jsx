@@ -32,6 +32,10 @@ function NavBar() {
                   <Nav.Link href="/">Home</Nav.Link>
                   <Nav.Link href="/DepotMaster">Depot Master</Nav.Link>
                   <Nav.Link href="/EmpMaster">Employee Master</Nav.Link>
+
+                  <Nav.Link href="/PostEmployeeModification ">
+                    Employee Joining Formalities
+                  </Nav.Link>
                   <Nav.Link href="/empAnalysis">
                     Employee Transfer Analysis{" "}
                   </Nav.Link>

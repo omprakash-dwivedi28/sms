@@ -44,7 +44,13 @@ function EmpTransferHistori() {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
-
+  const calculateWorkingYears = (fromDate, toDate) => {
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    const diffTime = Math.abs(to - from);
+    const diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25); // 365.25 to account for leap years
+    return diffYears.toFixed(1); // Return the result rounded to 1 decimal place
+  };
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
       <Card
@@ -83,14 +89,16 @@ function EmpTransferHistori() {
               <Table striped bordered hover responsive>
                 <thead>
                   <tr>
-                    <th> TID</th>
+                    <th>TID</th>
                     <th>Emp ID</th>
                     <th>Name</th>
                     <th>Current Designation</th>
                     <th>Previous Designation</th>
                     <th>From Depot</th>
                     <th>To Depot</th>
-                    <th>Transfer Date</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>working year</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -103,7 +111,14 @@ function EmpTransferHistori() {
                       <td>{employee.prev_desg}</td>
                       <td>{employee.from_depot_name}</td>
                       <td>{employee.to_depot_name}</td>
-                      <td>{formatDate(employee.transfer_date)}</td>
+                      <td>{formatDate(employee.from_date)}</td>
+                      <td>{formatDate(employee.to_date)}</td>
+                      <td>
+                        {calculateWorkingYears(
+                          employee.from_date,
+                          employee.to_date
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

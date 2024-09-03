@@ -8,6 +8,7 @@ import EmpAnalysis from "./pages/empAnalysis";
 import DepotWiseAnalysis from "./pages/depotWiseAnalysis";
 import Transfer from "./pages/Transfer";
 import EmpTransferHistori from "./pages/EmpTransferHistori";
+import PostEmployeeModification from "./pages/PostEmployeeModification ";
 
 // import PrivateRoute from "./components/PrivateRoute";
 
@@ -21,6 +22,10 @@ function App() {
 
           <Route path="/DepotMaster" element={<DepotMaster />} />
           <Route path="/EmpMaster" element={<EmpMaster />} />
+          <Route
+            path="/PostEmployeeModification"
+            element={<PostEmployeeModification />}
+          />
           <Route path="/EmpAnalysis" element={<EmpAnalysis />} />
           <Route path="/EmpTransferHistori" element={<EmpTransferHistori />} />
           <Route path="/DepotWiseAnalysis" element={<DepotWiseAnalysis />} />
