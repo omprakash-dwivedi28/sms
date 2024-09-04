@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import NavDropdown from "react-bootstrap/NavDropdown";
 
 function NavBar() {
   return (
@@ -30,13 +31,55 @@ function NavBar() {
               <Offcanvas.Body>
                 <Nav className="flex-grow-1 pe-3">
                   <Nav.Link href="/">Home</Nav.Link>
-                  <Nav.Link href="/DepotMaster">Depot Master</Nav.Link>
-                  <Nav.Link href="/EmpMaster">Employee Master</Nav.Link>
+                  <NavDropdown
+                    title="Master Pages"
+                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                  >
+                    <NavDropdown.Item href="/DepotMaster">
+                      Depot Master
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/EmpMaster">
+                      Employee Master
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/SkillMaster">
+                      Skill Master
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                  <NavDropdown
+                    title="Operational Pages"
+                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                  >
+                    <NavDropdown.Item href="/Transfer">
+                      Employee Transfer
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/PostEmployeeModification">
+                      Employee Joining Formalities
+                    </NavDropdown.Item>
+                  </NavDropdown>
 
-                  <Nav.Link href="/PostEmployeeModification ">
+                  <NavDropdown
+                    title="Analysis & Report"
+                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                  >
+                    <NavDropdown.Item href="/empAnalysis">
+                      Employee Transfer Analysis{" "}
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/EmpTransferHistori">
+                      Employee Transfer History{" "}
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/depotWiseAnalysis">
+                      All Depot Analysis{" "}
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                  {/* <Nav.Link href="/PostEmployeeModification ">
                     Employee Joining Formalities
-                  </Nav.Link>
-                  <Nav.Link href="/empAnalysis">
+                  </Nav.Link> */}
+                  {/* <Nav.Link href="/empAnalysis">
                     Employee Transfer Analysis{" "}
                   </Nav.Link>
                   <Nav.Link href="/EmpTransferHistori">
@@ -44,8 +87,8 @@ function NavBar() {
                   </Nav.Link>
                   <Nav.Link href="/depotWiseAnalysis">
                     All Depot Analysis{" "}
-                  </Nav.Link>
-                  <Nav.Link href="/Transfer">Employee Transfer</Nav.Link>
+                  </Nav.Link> */}
+                  {/* <Nav.Link href="/Transfer">Employee Transfer</Nav.Link> */}
                 </Nav>
               </Offcanvas.Body>
             </Navbar.Offcanvas>

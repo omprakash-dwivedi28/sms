@@ -122,22 +122,21 @@ const PostEmployeeModification = () => {
 
               {employeeData && (
                 <div className="mt-4">
-                  <h4 className="mb-3">Update Employee Details</h4>
-
-                  <Form.Group className="mb-3" controlId="formEmployeeName">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={employeeData.emp_name || ""}
-                      onChange={(e) =>
-                        setEmployeeData({
-                          ...employeeData,
-                          emp_name: e.target.value,
-                        })
-                      }
-                    />
+                  <Form.Group>
+                    <Form.Label>
+                      Employee Name:{" "}
+                      <strong>
+                        {employeeData.emp_name || "No Post Assigned"}
+                      </strong>
+                    </Form.Label>
                   </Form.Group>
-
+                  <Form.Group>
+                    <Form.Label>
+                      Previous Post:{" "}
+                      <strong>{employeeData.post || "No Post Assigned"}</strong>
+                    </Form.Label>
+                  </Form.Group>
+                  <h4 className="mb-3">Update Employee Details</h4>
                   <Form.Group className="mb-3" controlId="formJoiningDate">
                     <Form.Label>Joining Date</Form.Label>
                     <Form.Control
