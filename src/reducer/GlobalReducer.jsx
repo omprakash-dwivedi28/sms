@@ -40,6 +40,27 @@ const GlobalReducer = (state, action) => {
         skill_error: true,
       };
 
+    // For subskill master data
+
+    case "GET_SUBSKILL_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        subskill_loding: true,
+      };
+
+    case "GET_SUBSKILL_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        subskill_loding: false,
+        subskills: action.payload,
+      };
+    case "GET_SUBSKILL_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        subskill_loding: false,
+        subskill_error: true,
+      };
+
     // For gp and level data
 
     case "GET_GP_MASTER_INFO_BEGIN":

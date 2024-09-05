@@ -483,7 +483,7 @@ function EmpMaster() {
             </InputGroup>
             <InputGroup className="mb-3">
               <InputGroup.Text>DOR</InputGroup.Text>
-              {console.log("dor:::::::::::::::", formData.dor)}
+              {/* {console.log("dor:::::::::::::::", formData.dor)} */}
               <Form.Control
                 name="dor"
                 type="date"

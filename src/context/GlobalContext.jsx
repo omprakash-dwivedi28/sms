@@ -13,6 +13,12 @@ const initialState = {
   skills: null,
   skill_error: false,
 
+  //for subskill master init
+
+  subskill_loading: false,
+  subskills: null,
+  subskill_error: false,
+
   //for qualification init
 
   quali_loading: false,
@@ -70,6 +76,27 @@ export const GlobalProvider = ({ children }) => {
     } catch (error) {
       console.error("Error fetching SKILL_MASTER info:", error);
       dispatch({ type: "GET_SKILL_MASTER_INFO_ERROR" });
+    }
+  };
+  //END OF SKILL MASTER
+  const fetchsubSkillMaster = async () => {
+    // console.log("skill data");
+
+    dispatch({ type: "GET_SUBSKILL_MASTER_INFO_BEGIN" });
+    try {
+      const subskill_flag = true;
+      const response = await fetch(
+        `https://railwaymcq.com/sms/skill_master.php?subskill_flag=${subskill_flag}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      // console.log(data);
+      dispatch({ type: "GET_SUBSKILL_MASTER_INFO_SUCCESS", payload: data });
+    } catch (error) {
+      console.error("Error fetching SUBSKILL_MASTER info:", error);
+      dispatch({ type: "GET_SUBSKILL_MASTER_INFO_ERROR" });
     }
   };
 
@@ -132,6 +159,7 @@ export const GlobalProvider = ({ children }) => {
   useEffect(() => {
     fetchDepotInfo();
     fetchSkillMaster();
+    fetchsubSkillMaster();
     fetchGPMaster();
     fetchDESGMaster();
     fetchQuaification();
@@ -143,6 +171,7 @@ export const GlobalProvider = ({ children }) => {
         ...state,
         fetchDepotInfo,
         fetchSkillMaster,
+        fetchsubSkillMaster,
         fetchGPMaster,
         fetchDESGMaster,
         fetchQuaification,

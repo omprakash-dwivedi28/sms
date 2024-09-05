@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -7,6 +7,7 @@ import {
   Form,
   Button,
   Alert,
+  Table,
 } from "react-bootstrap";
 import { useGlobalContext } from "../context/GlobalContext";
 
@@ -16,8 +17,32 @@ const SkillMaster = () => {
   const [isUpdatingSubSkill, setIsUpdatingSubSkill] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [filteredSubskills, setFilteredSubskills] = useState([]);
 
-  const { skills } = useGlobalContext(); // Getting the list of skills from global context
+  const { skills, subskills } = useGlobalContext();
+
+  const isDuplicateEntry = () => {
+    if (!isUpdatingSubSkill) {
+      const duplicateSkill = skills?.some(
+        (skl) =>
+          skl.skill_name.trim().toLowerCase() === skill.trim().toLowerCase()
+      );
+      if (duplicateSkill) {
+        setError("Skill already exists.");
+        return true;
+      }
+    }
+
+    const duplicateSubSkill = subskills?.some(
+      (subskl) =>
+        subskl.subskill.trim().toLowerCase() === subSkill.trim().toLowerCase()
+    );
+
+    if (duplicateSubSkill) {
+      setError("SubSkill already exists for this skill.");
+      return true;
+    }
+  };
 
   const handleSkillSubmit = async () => {
     setError("");
@@ -27,7 +52,9 @@ const SkillMaster = () => {
       setError("Please fill in the required fields.");
       return;
     }
-
+    if (isDuplicateEntry()) {
+      return;
+    }
     const data = {
       skill,
       subSkill,
@@ -35,7 +62,6 @@ const SkillMaster = () => {
     };
 
     try {
-      console.log("data", data);
       const response = await fetch(
         "https://railwaymcq.com/sms/add-skill-master.php",
         {
@@ -47,7 +73,6 @@ const SkillMaster = () => {
         }
       );
 
-      // Handle text response if JSON fails
       const resultText = await response.text();
       try {
         const result = JSON.parse(resultText);
@@ -68,6 +93,16 @@ const SkillMaster = () => {
     }
   };
 
+  useEffect(() => {
+    if (skill) {
+      const filtered = subskills?.filter(
+        (subskl) =>
+          subskl.skill_name.trim().toLowerCase() === skill.trim().toLowerCase()
+      );
+      setFilteredSubskills(filtered);
+    }
+  }, [skill, subskills]);
+
   return (
     <Container className="mt-4">
       <Row className="justify-content-center">
@@ -82,7 +117,6 @@ const SkillMaster = () => {
               {success && <Alert variant="success">{success}</Alert>}
 
               <Form>
-                {/* If updating subskill, show dropdown to select skill from global context */}
                 {isUpdatingSubSkill ? (
                   <Form.Group className="mb-3">
                     <Form.Label>Select Skill to Update</Form.Label>
@@ -138,6 +172,44 @@ const SkillMaster = () => {
                   Submit
                 </Button>
               </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* Display filtered subskills */}
+        <Col md={6}>
+          <Card className="p-4 shadow-lg">
+            <Card.Body>
+              <Card.Title className="text-center mb-4">
+                Previous Entered SubSkills for selected Skill
+              </Card.Title>
+
+              {filteredSubskills && filteredSubskills.length > 0 ? (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Sr.No</th>
+                      <th>SubSkill</th>
+                      {/* <th>Verify</th> */}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSubskills.map((subskl, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{subskl.subskill}</td>
+                        {/* <td>
+                          <Form.Check type="checkbox" label="Verified" />
+                        </td> */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <Alert variant="warning">
+                  No subskills found for this skill.
+                </Alert>
+              )}
             </Card.Body>
           </Card>
         </Col>
