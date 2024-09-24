@@ -42,9 +42,16 @@ function NavBar() {
                     <NavDropdown.Item href="/EmpMaster">
                       Employee Master
                     </NavDropdown.Item>
+                    <NavDropdown.Item href="/EditableEmpMaster">
+                      Editabel Employee Master
+                    </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/SkillMaster">
                       Skill Master
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/EducationMaster">
+                      Education Master
                     </NavDropdown.Item>
                   </NavDropdown>
                   <NavDropdown
@@ -75,20 +82,11 @@ function NavBar() {
                     <NavDropdown.Item href="/depotWiseAnalysis">
                       All Depot Analysis{" "}
                     </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                    <NavDropdown.Item href="/DepotWiseEmpSkillData">
+                      Depot Wise Employee & Skill Data{" "}
+                    </NavDropdown.Item>
                   </NavDropdown>
-                  {/* <Nav.Link href="/PostEmployeeModification ">
-                    Employee Joining Formalities
-                  </Nav.Link> */}
-                  {/* <Nav.Link href="/empAnalysis">
-                    Employee Transfer Analysis{" "}
-                  </Nav.Link>
-                  <Nav.Link href="/EmpTransferHistori">
-                    Employee Transfer History{" "}
-                  </Nav.Link>
-                  <Nav.Link href="/depotWiseAnalysis">
-                    All Depot Analysis{" "}
-                  </Nav.Link> */}
-                  {/* <Nav.Link href="/Transfer">Employee Transfer</Nav.Link> */}
                 </Nav>
               </Offcanvas.Body>
             </Navbar.Offcanvas>

@@ -3,16 +3,18 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Image from "react-bootstrap/Image";
-// import smsImage from "./sms.jpeg";
+import smsImage from "../Image/sms.jpeg";
 
 function Home() {
   return (
     <div>
       <Container>
-        <Row>
-          <Col xs={6} md={4}>
-            {/* <Image src={smsImage} className="img-fluid" alt="SMS" />{" "} */}
-            {/* Use the imported image */}
+        <Row
+          className="justify-content-center align-items-center"
+          style={{ height: "100vh" }}
+        >
+          <Col xs={8} md={5} className="d-flex justify-content-center">
+            <Image src={smsImage} className="img-fluid" alt="Centered Image" />
           </Col>
         </Row>
       </Container>

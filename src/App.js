@@ -10,6 +10,9 @@ import Transfer from "./pages/Transfer";
 import EmpTransferHistori from "./pages/EmpTransferHistori";
 import PostEmployeeModification from "./pages/PostEmployeeModification ";
 import SkillMaster from "./pages/SkillMaster";
+import EducationMaster from "./pages/EducationMaster";
+import DepotWiseEmpSkillData from "./pages/DepotWiseEmpSkillData";
+import EditableEmpMaster from "./pages/EditableEmpMaster";
 
 // import PrivateRoute from "./components/PrivateRoute";
 
@@ -32,6 +35,12 @@ function App() {
           <Route path="/DepotWiseAnalysis" element={<DepotWiseAnalysis />} />
           <Route path="/Transfer" element={<Transfer />} />
           <Route path="/SkillMaster" element={<SkillMaster />} />
+          <Route path="/EducationMaster" element={<EducationMaster />} />
+          <Route
+            path="/DepotWiseEmpSkillData"
+            element={<DepotWiseEmpSkillData />}
+          />
+          <Route path="/EditableEmpMaster" element={<EditableEmpMaster />} />
         </Routes>
       </Router>
     </div>

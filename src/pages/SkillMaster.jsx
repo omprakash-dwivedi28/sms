@@ -176,7 +176,6 @@ const SkillMaster = () => {
           </Card>
         </Col>
 
-        {/* Display filtered subskills */}
         <Col md={6}>
           <Card className="p-4 shadow-lg">
             <Card.Body>
@@ -190,7 +189,6 @@ const SkillMaster = () => {
                     <tr>
                       <th>Sr.No</th>
                       <th>SubSkill</th>
-                      {/* <th>Verify</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -198,9 +196,6 @@ const SkillMaster = () => {
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{subskl.subskill}</td>
-                        {/* <td>
-                          <Form.Check type="checkbox" label="Verified" />
-                        </td> */}
                       </tr>
                     ))}
                   </tbody>
