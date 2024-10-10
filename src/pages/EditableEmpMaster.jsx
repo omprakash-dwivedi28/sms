@@ -11,14 +11,21 @@ import {
   Tabs,
   Tab,
 } from "react-bootstrap";
+import { useGlobalContext } from "../context/GlobalContext";
+import { Toast, ToastContainer } from "react-bootstrap";
+import { LuSaveAll } from "react-icons/lu";
+import { MdDelete } from "react-icons/md";
 
 const EditEmployeeByPfNo = () => {
   const [pfNo, setPfNo] = useState("");
   const [employee, setEmployee] = useState(null);
-  const [loading, setLoading] = useState(false); // To manage loading state
-  const [error, setError] = useState(null); // To manage errors
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [editableSkills, setEditableSkills] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const { depots, skills, subskills, gps, desgs, qualifications } =
+    useGlobalContext();
+  const [showToast, setShowToast] = useState(false);
 
   const fetchEmployeeData = () => {
     setLoading(true);
@@ -82,9 +89,6 @@ const EditEmployeeByPfNo = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting form...", employee);
-    console.log("Employee Data", employee.emp_id);
-
     fetch(
       `https://railwaymcq.com/sms/modify_employee_skill.php?emp_id=${employee.emp_id}`,
       {
@@ -100,12 +104,39 @@ const EditEmployeeByPfNo = () => {
         console.log("Raw response:", text);
         try {
           const data = JSON.parse(text);
+          setShowToast(true); // Show the toast
           console.log("Employee updated:", data);
         } catch (error) {
           console.error("Error parsing JSON:", error);
         }
       })
       .catch((error) => console.error("Error updating employee:", error));
+  };
+  const handleDeleteEmployee = () => {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      fetch(
+        `https://railwaymcq.com/sms/delete_employee.php?emp_id=${employee.emp_id}`,
+        {
+          method: "DELETE",
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert("Employee deleted successfully.");
+            console.log("data", data);
+            setEmployee(null); // Reset the employee data
+            setPfNo(""); // Clear the PF number input
+          } else {
+            alert("Failed to delete the employee.");
+            console.log("data", data);
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting employee:", error);
+          alert("An error occurred while deleting the employee.");
+        });
+    }
   };
 
   return (
@@ -190,12 +221,25 @@ const EditEmployeeByPfNo = () => {
                       Education
                     </Form.Label>
                     <Col sm={9}>
-                      <Form.Control
+                      <Form.Select
                         name="education"
-                        value={employee.education}
-                        onChange={handleEmployeeChange}
-                        placeholder="Education"
-                      />
+                        value={employee.education} // Initially shows current value
+                        onChange={handleEmployeeChange} // Handles change for education
+                        className="custom-select"
+                        required
+                      >
+                        {/* Initially show the current value as the first option */}
+                        <option value={employee.education}>
+                          {employee.education}
+                        </option>
+
+                        <option value="">Select Education Qualification</option>
+                        {qualifications?.map((quali) => (
+                          <option key={quali.q_id} value={quali.quali_name}>
+                            {quali.quali_name}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </Col>
                   </Form.Group>
 
@@ -204,12 +248,23 @@ const EditEmployeeByPfNo = () => {
                       Post
                     </Form.Label>
                     <Col sm={9}>
-                      <Form.Control
+                      <Form.Select
                         name="post"
-                        value={employee.post}
-                        onChange={handleEmployeeChange}
-                        placeholder="Post"
-                      />
+                        value={employee.post} // Initially shows the current post value
+                        onChange={handleEmployeeChange} // Handles change for post
+                        className="custom-select"
+                        required
+                      >
+                        {/* Initially show the current post as the first option */}
+                        <option value={employee.post}>{employee.post}</option>
+
+                        <option value="">Select Designation.</option>
+                        {desgs?.map((desg) => (
+                          <option key={desg.desg_id} value={desg.desg_name}>
+                            {desg.desg_name}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </Col>
                   </Form.Group>
                 </Card.Body>
@@ -246,21 +301,35 @@ const EditEmployeeByPfNo = () => {
                                         onChange={(e) =>
                                           handleSkillChange(subskillIndex, e)
                                         }
-                                        disabled={
-                                          !editableSkills[subskillIndex]
-                                        }
+                                        // disabled={
+                                        //   !editableSkills[subskillIndex]
+                                        // }
+                                        disabled
                                       />
                                     </td>
                                     <td>
                                       <Form.Control
                                         name="sub_skill_rating"
                                         value={object.sub_skill_rating || ""}
-                                        onChange={(e) =>
-                                          handleSkillChange(subskillIndex, e)
-                                        }
+                                        // onChange={(e) =>
+                                        //   handleSkillChange(subskillIndex, e)
+                                        // }
+                                        onChange={(e) => {
+                                          const value = Math.min(
+                                            Number(e.target.value),
+                                            10
+                                          ); // Limit the value to a max of 10
+                                          handleSkillChange(subskillIndex, {
+                                            target: {
+                                              name: "sub_skill_rating",
+                                              value,
+                                            },
+                                          });
+                                        }}
                                         disabled={
                                           !editableSkills[subskillIndex]
                                         }
+                                        max={10}
                                       />
                                     </td>
                                     <td>
@@ -294,8 +363,38 @@ const EditEmployeeByPfNo = () => {
                 </Alert>
               )}
               <Button variant="success" type="submit">
+                <LuSaveAll />
                 Save Employee
               </Button>
+              <Button
+                variant="danger"
+                className="ms-2"
+                onClick={handleDeleteEmployee}
+              >
+                <MdDelete />
+                Delete Employee
+              </Button>
+
+              <ToastContainer position="middle-end" className="p-3">
+                <Toast
+                  style={{ border: "2px solid #69d846", borderRadius: "5px" }}
+                  onClose={() => setShowToast(false)}
+                  show={showToast}
+                  delay={3000}
+                  autohide
+                >
+                  <Toast.Header>
+                    <img
+                      src="holder.js/20x20?text=%20"
+                      className="rounded me-2"
+                      alt=""
+                    />
+                    <strong className="me-auto">SMS Admin</strong>
+                    <small>Just now</small>
+                  </Toast.Header>
+                  <Toast.Body>Employee & skill updated successfully</Toast.Body>
+                </Toast>
+              </ToastContainer>
             </>
           )}
         </Form>

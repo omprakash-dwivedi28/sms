@@ -1,0 +1,13 @@
+@keyframes moveFromLeftToRight {
+  0% {
+    transform: translateX(-100%); /* Start off the screen to the left */
+  }
+  100% {
+    transform: translateX(0); /* End in the original position */
+  }
+}
+
+.move-left-to-right {
+  display: inline-block;
+  animation: moveFromLeftToRight 3s ease-in-out;
+}

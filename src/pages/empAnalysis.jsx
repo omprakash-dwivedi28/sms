@@ -214,8 +214,8 @@ function EmpAnalysis() {
                       <ul className="skill-list">
                         {employeeDetails.skills.map((skill, index) => (
                           <li key={index}>
-                            <strong>{skill.skill}:</strong> Rating{" "}
-                            {skill.skill_rating}
+                            <strong>{skill.skill} :: </strong>
+                            {"  "} {skill.sub_skill_rating}
                           </li>
                         ))}
                       </ul>

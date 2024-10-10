@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useGlobalContext } from "../context/GlobalContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Card from "react-bootstrap/Card";
+import { FaPlus, FaEdit, FaSave } from "react-icons/fa"; // Added icons
+import { BsDatabaseFillAdd } from "react-icons/bs";
+import { RiEditBoxFill } from "react-icons/ri";
+import { FcList } from "react-icons/fc";
 
 const EducationMaster = () => {
   const [newQualification, setNewQualification] = useState("");
@@ -43,25 +47,29 @@ const EducationMaster = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("API Response:", data);
         setLocalQualifications([...localQualifications, data]);
         setNewQualification("");
         setError("");
       })
-      .catch((error) => console.error("Error adding qualification:", error));
+      .catch((error) => {
+        console.error("Error adding qualification:", error);
+        setError("Failed to add qualification.");
+      });
   };
 
   const handleEditQualification = (id) => {
     if (
       localQualifications.some(
-        (q) => q.quali_name.toLowerCase() === editQualification.toLowerCase()
+        (q) =>
+          q.quali_name.toLowerCase() === editQualification.toLowerCase() &&
+          q.q_id !== id
       )
     ) {
       setError("This qualification already exists.");
       return;
     }
-    console.log("editQualification", editQualification);
-    fetch(`https://railwaymcq.com/sms/EduMaster.php`, {
+
+    fetch("https://railwaymcq.com/sms/EduMaster.php", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -81,89 +89,124 @@ const EducationMaster = () => {
       .catch((error) => console.error("Error updating qualification:", error));
   };
 
+  const handleSelectQualification = (e) => {
+    const selectedId = e.target.value;
+    const selectedQualification = localQualifications.find(
+      (q) => q.q_id === parseInt(selectedId)
+    );
+    setEditId(selectedId);
+    setEditQualification(selectedQualification?.quali_name || "");
+  };
+
   return (
     <div className="container mt-5">
       <Card
+        className="shadow-lg"
         style={{
-          width: "100%",
-          backgroundColor: "gray",
-
-          borderRadius: "0.5rem",
-          textAlign: "center",
+          backgroundColor: "#BED7DC",
+          color: "white",
+          borderRadius: "8px",
           padding: "20px",
-          fontSize: "2rem",
-          fontWeight: "bold",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          marginBottom: "20px",
+          textAlign: "center",
+          marginBottom: "30px",
         }}
       >
-        <Card.Body>Education Master</Card.Body>
+        <Card.Body className="fs-3 fw-bold">Education Master</Card.Body>
       </Card>
-      <h1 className="mb-4"></h1>
 
-      <div className="mb-4">
-        <h3>Add New Qualification</h3>
-        <div className="d-flex">
-          <input
-            type="text"
-            className="form-control me-2"
-            value={newQualification}
-            onChange={(e) => setNewQualification(e.target.value)}
-            placeholder="Enter qualification name"
-          />
-          <button className="btn btn-primary" onClick={handleAddQualification}>
-            Add
-          </button>
-        </div>
-        {error && <p className="text-danger mt-2">{error}</p>}
-      </div>
+      <Card className="shadow mb-4">
+        <Card.Header className="fs-5 fw-semibold bg-dark text-white">
+          <BsDatabaseFillAdd />
+          {"  "}
+          Add New Qualification
+        </Card.Header>
+        <Card.Body>
+          <div className="d-flex">
+            <input
+              type="text"
+              className="form-control me-2 shadow-sm"
+              value={newQualification}
+              onChange={(e) => setNewQualification(e.target.value)}
+              placeholder="Enter qualification name"
+              style={{ borderRadius: "8px" }}
+            />
+            <button
+              className="btn btn-success d-flex align-items-center"
+              onClick={handleAddQualification}
+              style={{ borderRadius: "8px", padding: "10px 20px" }}
+            >
+              <FaPlus className="me-2" /> Add
+            </button>
+          </div>
+          {error && <p className="text-danger mt-2">{error}</p>}
+        </Card.Body>
+      </Card>
 
-      <div>
-        <h3>Existing Qualifications</h3>
-        <ul className="list-group">
-          {localQualifications?.map((qualification, index) => {
-            return (
+      <Card className="shadow mb-4">
+        <Card.Header className="fs-5 fw-semibold bg-success text-white">
+          <RiEditBoxFill /> Edit Existing Qualification
+        </Card.Header>
+        <Card.Body>
+          <select
+            className="form-select shadow-sm mb-3"
+            onChange={handleSelectQualification}
+            value={editId || ""}
+            style={{ borderRadius: "8px" }}
+          >
+            <option value="">Select a qualification to edit</option>
+            {localQualifications?.map((qualification) => (
+              <option key={qualification.q_id} value={qualification.q_id}>
+                {qualification.quali_name}
+              </option>
+            ))}
+          </select>
+
+          {editId && (
+            <div className="d-flex">
+              <input
+                type="text"
+                className="form-control me-2 shadow-sm"
+                value={editQualification}
+                onChange={(e) => setEditQualification(e.target.value)}
+                placeholder="Edit qualification name"
+                style={{ borderRadius: "8px" }}
+              />
+              <button
+                className="btn btn-success d-flex align-items-center"
+                onClick={() => handleEditQualification(editId)}
+                style={{ borderRadius: "8px", padding: "10px 20px" }}
+              >
+                <FaSave className="me-2" /> Save
+              </button>
+            </div>
+          )}
+
+          {error && <p className="text-danger mt-2">{error}</p>}
+        </Card.Body>
+      </Card>
+
+      {/* List of Qualifications */}
+      <Card className="shadow">
+        <Card.Header className="fs-5 fw-semibold bg-info text-white">
+          <FcList /> List of Qualifications
+        </Card.Header>
+        <Card.Body>
+          <ul className="list-group">
+            {localQualifications?.map((qualification) => (
               <li
                 key={qualification.q_id}
-                className="list-group-item d-flex justify-content-between align-items-center"
+                className="list-group-item d-flex justify-content-between align-items-center shadow-sm mb-2"
+                style={{
+                  borderRadius: "8px",
+                  padding: "15px",
+                }}
               >
-                {editId === qualification.q_id ? (
-                  <div className="d-flex">
-                    <input
-                      type="text"
-                      className="form-control me-2"
-                      value={editQualification}
-                      onChange={(e) => setEditQualification(e.target.value)}
-                      placeholder="Edit qualification name"
-                    />
-                    <button
-                      className="btn btn-success"
-                      onClick={() =>
-                        handleEditQualification(qualification.q_id)
-                      }
-                    >
-                      Save
-                    </button>
-                  </div>
-                ) : (
-                  <div className="d-flex justify-content-between w-100">
-                    <span>{qualification.quali_name}</span>
-                    <button
-                      className="btn btn-warning"
-                      onClick={() => {
-                        setEditId(qualification.q_id);
-                        setEditQualification(qualification.quali_name);
-                      }}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                )}
+                {qualification.quali_name}
               </li>
-            );
-          })}
-        </ul>
-      </div>
+            ))}
+          </ul>
+        </Card.Body>
+      </Card>
     </div>
   );
 };

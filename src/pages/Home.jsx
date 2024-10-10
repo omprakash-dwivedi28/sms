@@ -4,19 +4,14 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Image from "react-bootstrap/Image";
 import smsImage from "../Image/sms.jpeg";
+import Ratio from "react-bootstrap/Ratio";
+import Slider from "../components/NavBar/Slider";
 
 function Home() {
   return (
     <div>
       <Container>
-        <Row
-          className="justify-content-center align-items-center"
-          style={{ height: "100vh" }}
-        >
-          <Col xs={8} md={5} className="d-flex justify-content-center">
-            <Image src={smsImage} className="img-fluid" alt="Centered Image" />
-          </Col>
-        </Row>
+        <Slider />
       </Container>
     </div>
   );

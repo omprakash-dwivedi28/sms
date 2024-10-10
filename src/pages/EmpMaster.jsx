@@ -48,39 +48,45 @@ function EmpMaster() {
   const [selectededu, setSelectedEdu] = useState("");
   const [filteredSubskills, setFilteredSubskills] = useState([]);
 
-  // const [editingEmployee, setEditingEmployee] = useState(null); // This will hold the employee to be edited
-  // const [isEditMode, setIsEditMode] = useState(false); // This will switch between add and edit mode
-
   const { depots, skills, subskills, gps, desgs, qualifications } =
     useGlobalContext();
 
   const handleChange = async (e) => {
     const { name, value, checked } = e.target;
-
+    if (name === "pf_no") {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+      await checkPFNoAvailability(value);
+    } else if (name === "hrms_id") {
+      setFormData({
+        ...formData,
+        [name]: value.toUpperCase(),
+      });
+      await checkHRMSNoAvailability(value);
+    }
     if (name === "skills") {
       const selectedSkill = skills.find((skill) => skill.skill_name === value);
 
-      // Check if the skill already exists in the formData.skills array
       const skillExists = formData.skills.some(
         (skillObj) => Object.keys(skillObj)[0] === selectedSkill.skill_name
       );
 
       if (checked && !skillExists) {
-        // Add new skill to the formData.skills array
         setFormData((prevData) => ({
           ...prevData,
           skills: [
             ...prevData.skills,
             {
               [selectedSkill.skill_name]: {
-                subskills: {}, // Initialize subskills for the skill
-                avgRating: 0, // Adding field to store the average rating
+                subskills: {},
+                avgRating: 0,
               },
             },
           ],
         }));
       } else if (!checked && skillExists) {
-        // Remove the skill from the formData.skills array
         setFormData((prevData) => ({
           ...prevData,
           skills: prevData.skills.filter(
@@ -130,6 +136,36 @@ function EmpMaster() {
     });
   };
 
+  const checkPFNoAvailability = async (pfNo) => {
+    try {
+      const pfno_flag = true;
+      const response = await fetch(
+        `https://railwaymcq.com/sms/emp_validation.php?pf_no=${encodeURIComponent(
+          pfNo
+        )}&pfno_flag=${pfno_flag}`
+      );
+      const result = await response.json();
+      setIsPFNoAvailable(result.isAvailable);
+    } catch (error) {
+      console.error("Error checking PF NO availability:", error);
+      setIsPFNoAvailable(false);
+    }
+  };
+  const checkHRMSNoAvailability = async (hrms_id) => {
+    try {
+      const hrms_flag = true;
+      const response = await fetch(
+        `https://railwaymcq.com/sms/emp_validation.php?hrms_id=${encodeURIComponent(
+          hrms_id
+        )}&hrms_flag=${hrms_flag}`
+      );
+      const result = await response.json();
+      setIsHRMSNoAvailable(result.isAvailable);
+    } catch (error) {
+      console.error("Error checking HRMS NO availability:", error);
+      setIsHRMSNoAvailable(false);
+    }
+  };
   useEffect(() => {
     if (formData.skills.length > 0) {
       const lastSelectedSkill = Object.keys(
@@ -177,47 +213,6 @@ function EmpMaster() {
       setResponseMessage(`Error: ${error.message}`);
     }
   };
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (!isPFNoAvailable) {
-  //     setResponseMessage("PF NO already exists. Please choose another.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const endpoint = isEditMode
-  //       ? `https://railwaymcq.com/sms/Update_emp_data_and_skil.php?id=${editingEmployee.id}`
-  //       : "https://railwaymcq.com/sms/Insert_emp_data_and_skil.php";
-
-  //     const method = isEditMode ? "PUT" : "POST";
-
-  //     const response = await fetch(endpoint, {
-  //       method,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(formData),
-  //     });
-  //     const result = await response.json();
-
-  //     if (response.ok) {
-  //       setResponseMessage(
-  //         isEditMode
-  //           ? "Employee updated successfully!"
-  //           : "Employee added successfully!"
-  //       );
-  //       if (isEditMode) {
-  //         setIsEditMode(false); // Switch back to add mode after editing
-  //         setEditingEmployee(null);
-  //       }
-  //     } else {
-  //       setResponseMessage(`Error: ${result.message}`);
-  //     }
-  //   } catch (error) {
-  //     setResponseMessage(`Error: ${error.message}`);
-  //   }
-  // };
 
   const handleDepotChange = (e) => {
     const selectedDepot = e.target.value;
@@ -330,74 +325,29 @@ function EmpMaster() {
     }
   }, [formData.doa]);
 
-  // Function to calculate the overall employee rating
   const calculateOverallRating = (skills) => {
     const totalSkills = skills.length;
 
-    // Get all average ratings of the skills
     const totalAvgRatings = skills.reduce((total, skillObj) => {
       const skillName = Object.keys(skillObj)[0];
       const avgRating = parseFloat(skillObj[skillName].avgRating) || 0;
       return total + avgRating;
     }, 0);
 
-    // Calculate overall rating (totalAvgRatings / number of skills)
     const overallRating =
       totalSkills > 0 ? (totalAvgRatings / totalSkills).toFixed(2) : 0;
 
     return overallRating;
   };
 
-  // Update useEffect for automatic rating calculation
   useEffect(() => {
-    // Calculate overall rating when skills or subskill ratings change
     const overallRating = calculateOverallRating(formData.skills);
     setFormData((prevData) => ({
       ...prevData,
-      rating: overallRating, // Update the rating field with the overall rating
+      rating: overallRating,
     }));
   }, [formData.skills]);
 
-  // //for modify mode
-  // const handleEditClick = (employee) => {
-  //   setEditingEmployee(employee);
-  //   setFormData({
-  //     depo_id: employee.depo_id,
-  //     depot_name: employee.depot_name,
-  //     emp_name: employee.emp_name,
-  //     mobile_no: employee.mobile_no,
-  //     email_id: employee.email_id,
-  //     pf_no: employee.pf_no,
-  //     hrms_id: employee.hrms_id,
-  //     gp: employee.gp,
-  //     dob: employee.dob,
-  //     doa: employee.doa,
-  //     dor: employee.dor,
-  //     post: employee.post,
-  //     rating: employee.rating,
-  //     level: employee.level,
-  //     skills: employee.skills,
-  //     exp: employee.exp,
-  //     education: employee.education,
-  //     achivment: employee.achivment,
-  //     otherEducation: employee.otherEducation,
-  //   });
-  //   setIsEditMode(true); // Switch to edit mode
-  // };
-  // useEffect(() => {
-  //   const fetchEmployees = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "https://railwaymcq.com/sms/Get_all_emp.php"
-  //       );
-  //       const employees = await response.json();
-  //       setEmployees(employees);
-  //     } catch (error) {
-  //       console.error("Error fetching employees", error);
-  //     }
-  //   };
-  //   fetchEmployees();
-  // }, []);
   return (
     <div className="d-flex justify-content-center  bg-light">
       <div className="">
@@ -407,7 +357,7 @@ function EmpMaster() {
               className="shadow-sm p-4 mb-5 bg-white rounded"
               style={{ overflow: "auto", width: "35rem" }}
             >
-              <FaEdit style={{ colour: "red" }} />
+              {/* <FaEdit style={{ colour: "red" }} /> */}
 
               <Card.Body style={{ height: "550px" }}>
                 <Card.Title className="text-center mb-4">

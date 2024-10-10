@@ -9,6 +9,7 @@ import { useGlobalContext } from "../context/GlobalContext";
 import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
+import "../components/css/Transfer.css"; // Import custom CSS
 
 function Transfer() {
   const [selectedFromDepot, setSelectedFromDepot] = useState("");
@@ -202,8 +203,10 @@ function Transfer() {
     <Container>
       <Row className="mb-4">
         <Col md={4}>
-          <Card>
-            <Card.Header>Transfer from Depot</Card.Header>
+          <Card bg="light" className="custom-card">
+            <Card.Header className="custom-card-header">
+              Transfer from Depot
+            </Card.Header>
             <Card.Body>
               <Form>
                 <InputGroup className="mb-3">
@@ -243,7 +246,8 @@ function Transfer() {
                               }
                             />
                           </td>
-                          <td>{employee.serial_no}</td>
+                          {console.log("employee", employee)}
+                          <td>{employee.sr_no}</td>
                           <td>{employee.emp_name}</td>
                           <td>{employee.post}</td>
                           <td>{employee.rating}</td>
@@ -255,8 +259,10 @@ function Transfer() {
               </Form>
             </Card.Body>
           </Card>
-          <Card className="mt-4">
-            <Card.Header>Before Transfer</Card.Header>
+          <Card className="mt-4 custom-card">
+            <Card.Header className="custom-card-header">
+              Before Transfer
+            </Card.Header>
             <Card.Body>
               {fromDepotData && (
                 <div>
@@ -282,10 +288,14 @@ function Transfer() {
             </Card.Body>
           </Card>
           <Card>
-            <Card.Header>After Transfer</Card.Header>
+            <Card.Header className="custom-card-header">
+              After Transfer
+            </Card.Header>
             <Card.Body>
-              <h6 className="mt-4">Depot Rating: {averageRating}</h6>
-              <h6 className="mt-4">
+              <h6 className="mt-4 custom-card">
+                Depot Rating: {averageRating}
+              </h6>
+              <h6 className="mt-4 custom-card">
                 {" "}
                 Depot. staff:{" "}
                 {Number(fromDepotData.staff_avail) -
@@ -293,40 +303,59 @@ function Transfer() {
               </h6>
             </Card.Body>
           </Card>
-          <Card className="mt-4">
+          <Card bg="light" className="custom-card">
             <Card.Body>
               <h6 className="text-secondary mb-3">
-                <strong>Pin pointing position Table</strong>
+                <strong>Pin Pointing Position Table</strong>
               </h6>
               <Container>
-                <ul className="skill-list">
-                  <Row className="mb-2">
-                    {/* Column headers */}
-                    <Col md={3}>
-                      <strong>Designation</strong>
-                    </Col>
-                    <Col md={3}>
-                      <strong>SS</strong>
-                    </Col>
-                    <Col md={3}>
-                      <strong>MOR</strong>
-                    </Col>
-                    <Col md={3}>
-                      <strong>Vacancy</strong>
-                    </Col>
-                  </Row>
-                  {fromPostWiseData.map((post, index) => (
-                    <li key={index}>
-                      <Row>
-                        <Col name="Desg Name">
-                          <strong>{post.desg_name}:</strong>
-                        </Col>
-                        :<Col> {post.ss} </Col>:<Col>{post.mor}</Col>:
-                        <Col>{post.ss - post.mor}</Col>
-                      </Row>
-                    </li>
-                  ))}
-                </ul>
+                <Table responsive bordered hover className="text-center">
+                  <thead>
+                    <tr>
+                      <th>Designation</th>
+                      <th>SS</th>
+                      <th>MOR</th>
+                      <th>Vacancy</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fromPostWiseData.map((post, index) => (
+                      <tr key={index}>
+                        <td>
+                          <strong>{post.desg_name}</strong>
+                        </td>
+                        <td>{post.ss}</td>
+                        <td>{post.mor}</td>
+                        <td>{Number(post.ss) - Number(post.mor)}</td>
+                      </tr>
+                    ))}
+                    {/* Total Calculation Row */}
+                    <tr className="font-weight-bold">
+                      <td className="text-secondary mb-3">
+                        <strong>Total</strong>
+                      </td>
+                      <td>
+                        {fromPostWiseData.reduce(
+                          (total, post) => total + Number(post.ss),
+                          0
+                        )}
+                      </td>
+                      <td>
+                        {fromPostWiseData.reduce(
+                          (total, post) => total + Number(post.mor),
+                          0
+                        )}
+                      </td>
+                      <td>
+                        {fromPostWiseData.reduce(
+                          (total, post) =>
+                            total + (Number(post.ss) - Number(post.mor)),
+                          0
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
               </Container>
             </Card.Body>
           </Card>
@@ -349,8 +378,10 @@ function Transfer() {
         </Col>
 
         <Col md={4}>
-          <Card>
-            <Card.Header>Transfer to Depot</Card.Header>
+          <Card bg="light" className="custom-card">
+            <Card.Header className="custom-card-header">
+              Transfer to Depot
+            </Card.Header>
             <Card.Body>
               <Form>
                 <InputGroup className="mb-3">
@@ -373,7 +404,7 @@ function Transfer() {
                     <Table striped bordered hover>
                       <thead>
                         <tr>
-                          <th>Select</th>
+                          <th>Sr.No</th>
                           <th>Name</th>
                           <th>Post</th>
                           <th>Rating</th>
@@ -383,13 +414,14 @@ function Transfer() {
                         {toDepotEmployees.map((employee) => (
                           <tr key={employee.emp_id}>
                             <td>
-                              <Form.Check
+                              {employee.sr_no}
+                              {/* <Form.Check
                                 type="checkbox"
                                 onChange={(e) =>
                                   handleEmployeeSelection(e, employee)
                                 }
                                 disabled
-                              />
+                              /> */}
                             </td>
                             <td>{employee.emp_name}</td>
                             <td>{employee.post}</td>
@@ -402,17 +434,42 @@ function Transfer() {
                 </Form>
                 <h6 className="mt-4">Transferred Employees</h6>
                 <ListGroup>
-                  {transferredEmployees.map((employee) => (
+                  <Table striped bordered hover className="custom-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Post</th>
+                        <th>PF NO</th>
+                        <th>Rating</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transferredEmployees.map((employee) => (
+                        <tr key={employee.emp_id}>
+                          <td>{employee.emp_name}</td>
+                          <td>{employee.post}</td>
+                          <td>{employee.pf_no}</td>
+                          <td>{employee.rating}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+
+                  {/* {transferredEmployees.map((employee) => (
                     <ListGroup.Item key={employee.emp_id}>
+                      <strong>Name:-</strong>
                       {employee.emp_name}
+                      <strong>PF No.</strong>:{employee.pf_no}
                     </ListGroup.Item>
-                  ))}
+                  ))} */}
                 </ListGroup>
               </Form>
             </Card.Body>
           </Card>
-          <Card className="mt-4">
-            <Card.Header>Before Transfer</Card.Header>
+          <Card bg="light" className="custom-card">
+            <Card.Header className="custom-card-header">
+              Before Transfer
+            </Card.Header>
             <Card.Body>
               {toDepotData && (
                 <div>
@@ -436,11 +493,15 @@ function Transfer() {
               )}
             </Card.Body>
           </Card>
-          <Card>
-            <Card.Header>After Transfer</Card.Header>
+          <Card bg="light" className="custom-card">
+            <Card.Header className="custom-card-header">
+              After Transfer
+            </Card.Header>
             <Card.Body>
-              <h6 className="mt-4">Depot Rating: {ToaverageRating}</h6>
-              <h6 className="mt-4">
+              <h6 className="mt-4 custom-card">
+                Depot Rating: {ToaverageRating}
+              </h6>
+              <h6 className="mt-4 custom-card">
                 {" "}
                 Depot Staff:{" "}
                 {Number(toDepotData.staff_avail) + fromselectedCurrentStaff}
@@ -448,40 +509,59 @@ function Transfer() {
             </Card.Body>
           </Card>
           <Card className="mt-4"></Card>
-          <Card className="mt-4">
+          <Card bg="light" className="custom-card">
             <Card.Body>
               <h6 className="text-secondary mb-3">
-                <strong>Pin pointing position Table</strong>
+                <strong>Pin Pointing Position Table</strong>
               </h6>
               <Container>
-                <ul className="skill-list">
-                  <Row className="mb-2">
-                    {/* Column headers */}
-                    <Col md={3}>
-                      <strong>Designation</strong>
-                    </Col>
-                    <Col md={3}>
-                      <strong>SS</strong>
-                    </Col>
-                    <Col md={3}>
-                      <strong>MOR</strong>
-                    </Col>
-                    <Col md={3}>
-                      <strong>Vacancy</strong>
-                    </Col>
-                  </Row>
-                  {toPostWiseData.map((post, index) => (
-                    <li key={index}>
-                      <Row>
-                        <Col name="Desg Name">
-                          <strong>{post.desg_name}:</strong>
-                        </Col>
-                        :<Col> {post.ss} </Col>:<Col>{post.mor}</Col>:
-                        <Col>{post.ss - post.mor}</Col>
-                      </Row>
-                    </li>
-                  ))}
-                </ul>
+                <Table responsive bordered hover className="text-center">
+                  <thead>
+                    <tr>
+                      <th>Designation</th>
+                      <th>SS</th>
+                      <th>MOR</th>
+                      <th>Vacancy</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {toPostWiseData.map((post, index) => (
+                      <tr key={index}>
+                        <td>
+                          <strong>{post.desg_name}</strong>
+                        </td>
+                        <td>{post.ss}</td>
+                        <td>{post.mor}</td>
+                        <td>{Number(post.ss) - Number(post.mor)}</td>
+                      </tr>
+                    ))}
+                    {/* Total Calculation Row */}
+                    <tr className="font-weight-bold">
+                      <td className="text-secondary mb-3">
+                        <strong>Total</strong>
+                      </td>
+                      <td>
+                        {toPostWiseData.reduce(
+                          (total, post) => total + Number(post.ss),
+                          0
+                        )}
+                      </td>
+                      <td>
+                        {toPostWiseData.reduce(
+                          (total, post) => total + Number(post.mor),
+                          0
+                        )}
+                      </td>
+                      <td>
+                        {toPostWiseData.reduce(
+                          (total, post) =>
+                            total + (Number(post.ss) - Number(post.mor)),
+                          0
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
               </Container>
             </Card.Body>
           </Card>
