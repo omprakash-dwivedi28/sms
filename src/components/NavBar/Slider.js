@@ -27,7 +27,9 @@ function Slider() {
           </Ratio>
         </Row>
         <Carousel.Caption>
-          {/* <h5>First slide label</h5>
+          {/* <h5>sms</h5>
+          <p>sms</p>
+          <h5>First slide label</h5>
           <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p> */}
         </Carousel.Caption>
       </Carousel.Item>
@@ -48,6 +50,9 @@ function Slider() {
           </Ratio>
         </Row>
         <Carousel.Caption>
+          {/* <h5>sms</h5>
+          <p>sms</p> */}
+
           {/* <h5>Second slide label</h5>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> */}
         </Carousel.Caption>
@@ -69,7 +74,10 @@ function Slider() {
           </Ratio>
         </Row>
         <Carousel.Caption>
-          {/* <h5>Third slide label</h5>
+          {/* <h5>sms</h5>
+          <p>sms</p>
+
+          <h5>Third slide label</h5>
           <p>
             Praesent commodo cursus magna, vel scelerisque nisl consectetur.
           </p> */}

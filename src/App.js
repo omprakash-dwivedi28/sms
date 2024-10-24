@@ -13,8 +13,8 @@ import SkillMaster from "./pages/SkillMaster";
 import EducationMaster from "./pages/EducationMaster";
 import DepotWiseEmpSkillData from "./pages/DepotWiseEmpSkillData";
 import EditableEmpMaster from "./pages/EditableEmpMaster";
-
-// import PrivateRoute from "./components/PrivateRoute";
+import Analytics from "./pages/Analytics";
+// import Scatter from "./pages/Charts/Scatter";
 
 function App() {
   return (
@@ -41,6 +41,8 @@ function App() {
             element={<DepotWiseEmpSkillData />}
           />
           <Route path="/EditableEmpMaster" element={<EditableEmpMaster />} />
+          <Route path="/Analytics" element={<Analytics />} />
+          {/* <Route path="/Scatter" element={<Scatter />} /> */}
         </Routes>
       </Router>
     </div>

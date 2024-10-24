@@ -1,13 +1,58 @@
-@keyframes moveFromLeftToRight {
-  0% {
-    transform: translateX(-100%); /* Start off the screen to the left */
-  }
-  100% {
-    transform: translateX(0); /* End in the original position */
+Style
+  the
+  Anni
+  slider
+  to
+  appear
+  on
+  the
+  right
+  side
+  from
+  top
+  to
+  bottom
+  .anni-slider-right {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh; /* Full viewport height */
+  width: 200px; /* Default width for larger screens */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* Optional: Add a background for contrast */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it's on top of other elements */
+  transition: width 0.3s ease; /* Smooth width transitions */
+}
+
+/* Responsive adjustments for medium screens */
+@media (max-width: 1200px) {
+  .anni-slider-right {
+    width: 180px; /* Reduce width for medium screens */
   }
 }
 
-.move-left-to-right {
-  display: inline-block;
-  animation: moveFromLeftToRight 3s ease-in-out;
+/* Responsive adjustments for small screens */
+@media (max-width: 768px) {
+  .anni-slider-right {
+    width: 150px; /* Further reduce width for small screens */
+  }
+}
+
+/* Responsive adjustments for extra small screens (mobiles) */
+@media (max-width: 576px) {
+  .anni-slider-right {
+    width: 100px; /* Narrowest width for mobile devices */
+  }
+}
+
+.anni-slider-right .custom-slider-size {
+  width: 100%; /* Full width of the container */
+  height: 100%; /* Full height of the container */
 }

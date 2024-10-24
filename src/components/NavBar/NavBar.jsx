@@ -14,22 +14,19 @@ import { VscMortarBoard } from "react-icons/vsc";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { VscSignIn } from "react-icons/vsc";
 import { AiOutlineConsoleSql } from "react-icons/ai";
+import { FaChartBar } from "react-icons/fa";
 import { FaHome } from "react-icons/fa";
-import "../css/NavBar.css"; // Assuming you create a CSS file for custom styles
+import "../css/NavBar.css";
 import "animate.css";
+import Anni from "./Anni";
 
 function NavBar() {
   return (
     <>
       {[false].map((expand) => (
-        <Navbar
-          key={expand}
-          expand={expand}
-          className="bg-body-tertiary d-lg mb-3"
-        >
+        <Navbar key={expand} expand={expand} className="bg-body-tertiary mb-3">
           <Container fluid>
             <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
-
             <Navbar.Brand href="#" className="move-left-to-right">
               <strong>Welcome to staff management system!!!!!!!</strong>
             </Navbar.Brand>
@@ -56,17 +53,18 @@ function NavBar() {
                     <NavDropdown.Item href="/DepotMaster">
                       <SiHomeassistantcommunitystore
                         style={{ color: "blue" }}
-                      />{" "}
+                      />
                       Depot Master
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/EmpMaster">
-                      <FaUserPlus style={{ color: "blue" }} /> Employee Master
+                      <FaUserPlus style={{ color: "blue" }} />
+                      Employee Master
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/EditableEmpMaster">
                       <MdOutlineEditNote style={{ color: "blue" }} />
-                      Editabel Employee Master
+                      Editable Employee Master
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/SkillMaster">
@@ -74,8 +72,8 @@ function NavBar() {
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/EducationMaster">
-                      <VscMortarBoard style={{ color: "blue" }} />
-                      Education Master
+                      <VscMortarBoard style={{ color: "blue" }} /> Education
+                      Master
                     </NavDropdown.Item>
                   </NavDropdown>
                   <NavDropdown
@@ -92,30 +90,39 @@ function NavBar() {
                       Employee Joining Formalities
                     </NavDropdown.Item>
                   </NavDropdown>
-
                   <NavDropdown
                     title="Analysis & Report"
                     id={`offcanvasNavbarDropdown-expand-${expand}`}
                   >
                     <NavDropdown.Item href="/empAnalysis">
                       <AiOutlineConsoleSql style={{ color: "blue" }} />
-                      Employee Transfer Analysis{" "}
+                      Employee Transfer Analysis
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/EmpTransferHistori">
                       <AiOutlineConsoleSql style={{ color: "blue" }} />
-                      Employee Transfer History{" "}
+                      Employee Transfer History
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/depotWiseAnalysis">
                       <AiOutlineConsoleSql style={{ color: "blue" }} />
-                      All Depot Analysis{" "}
+                      All Depot Analysis
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item href="/DepotWiseEmpSkillData">
                       <AiOutlineConsoleSql style={{ color: "blue" }} />
-                      Depot Wise Employee & Skill Data{" "}
+                      Depot Wise Employee & Skill Data
                     </NavDropdown.Item>
+                  </NavDropdown>
+                  <NavDropdown
+                    title="Analytics Pages"
+                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                  >
+                    <NavDropdown.Item href="/Analytics">
+                      <FaChartBar style={{ color: "blue" }} />
+                      Visual Analytics Hub
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
                   </NavDropdown>
                 </Nav>
               </Offcanvas.Body>
@@ -129,6 +136,8 @@ function NavBar() {
               />
               <Button variant="outline-success">Search</Button>
             </Form>
+            {/* Anni component shifted to fit the search bar free space */}
+            <Anni />
           </Container>
         </Navbar>
       ))}

@@ -10,6 +10,8 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import "../components/css/Transfer.css"; // Import custom CSS
+import { Chart } from "react-google-charts"; // Import the Chart component
+import Dropdown from "react-bootstrap/Dropdown";
 
 function Transfer() {
   const [selectedFromDepot, setSelectedFromDepot] = useState("");
@@ -23,6 +25,16 @@ function Transfer() {
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [transferredEmployees, setTransferredEmployees] = useState([]);
   const [combinedEmployees, setCombinedEmployees] = useState([]);
+  const [combinedChartData, setCombinedChartData] = useState([]);
+
+  // const [chartData, setChartData] = useState([
+  //   ["Designation", "From Count", "To Count"],
+  // ]);
+
+  const [chartData, setChartData] = useState([]);
+  const [selectedMetric, setSelectedMetric] = useState("Vacancy"); // Default selection
+  const [fromDepotName, setFromDepotName] = useState({});
+  const [toDepotshowName, setToDepotshowName] = useState({});
 
   const { depots } = useGlobalContext();
   const [averageRating, setAverageRating] = useState(0);
@@ -30,7 +42,16 @@ function Transfer() {
   const [fromselectedCurrentStaff, setselectedfromCurrentStaff] = useState(0);
 
   const handleToDepotChange = (e) => {
-    setSelectedToDepot(e.target.value);
+    // setSelectedToDepot(e.target.value);
+
+    //Third code ----------
+    const depo_id = e.target.value;
+
+    setSelectedToDepot(depo_id);
+
+    // Find depot_name based on selected depo_id
+    const selectedDepot = depots.find((depot) => depot.depo_id === depo_id);
+    setToDepotshowName(selectedDepot ? selectedDepot.depot_name : "");
   };
   useEffect(() => {
     if (selectedFromDepot) {
@@ -42,6 +63,8 @@ function Transfer() {
           setFromDepotEmployees(data.employee_data || []);
           setFromDepotData(data.depot_data || {});
           setFromPostWiseData(data.post_wise_data || []);
+          // setFromDepotName(data.depot);
+          // console.log("fromDepotEmployees" + fromDepotEmployees);
         })
         .catch((error) => {
           console.error("Error fetching employees and depot data:", error);
@@ -67,9 +90,19 @@ function Transfer() {
   }, [selectedToDepot]);
 
   const handleFromDepotChange = (e) => {
-    setSelectedFromDepot(e.target.value);
+    // setSelectedFromDepot(e.target.value);
+
+    const depo_id = e.target.value;
+
+    setSelectedFromDepot(depo_id);
+
+    const selectedDepot = depots.find((depot) => depot.depo_id === depo_id);
+    setFromDepotName(selectedDepot ? selectedDepot.depot_name : "");
   };
-  useEffect(() => {}, []);
+  const handleMetricChange = (metric) => {
+    setSelectedMetric(metric); // Update selected metric on dropdown change
+  };
+  // useEffect(() => {}, []);
   const handleEmployeeSelection = (e, employee) => {
     let updatedSelectedEmployees;
 
@@ -166,9 +199,6 @@ function Transfer() {
     setSelectedEmployees([]);
     setFromPostWiseData(updatedFromPostWiseData);
     setToPostWiseData(updatedToPostWiseData);
-    console.log("updatedEmployees", updatedEmployees);
-    console.log("toDepot", selectedToDepot);
-    console.log("fromDepot", selectedFromDepot);
 
     fetch("https://railwaymcq.com/sms/update_transfer.php", {
       method: "POST",
@@ -186,7 +216,7 @@ function Transfer() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         if (data.success) {
           console.log("Transfer successful");
         } else {
@@ -198,6 +228,204 @@ function Transfer() {
         console.error("Error transferring employees:", error);
       });
   };
+  // useEffect(() => {
+  //   const fromDataMap = new Map();
+  //   const toDataMap = new Map();
+
+  //   // Prepare data based on selected metric
+  //   fromPostWiseData.forEach((post) => {
+  //     const designation = post.desg_name;
+  //     const ssCount = Number(post.ss);
+  //     const morCount = Number(post.mor);
+  //     const vacancyCount = ssCount - morCount;
+
+  //     fromDataMap.set(designation, {
+  //       ss: ssCount,
+  //       mor: morCount,
+  //       vacancy: vacancyCount,
+  //     });
+  //   });
+
+  //   toPostWiseData.forEach((post) => {
+  //     const designation = post.desg_name;
+  //     const ssCount = Number(post.ss);
+  //     const morCount = Number(post.mor);
+  //     const vacancyCount = ssCount - morCount;
+
+  //     toDataMap.set(designation, {
+  //       ss: ssCount,
+  //       mor: morCount,
+  //       vacancy: vacancyCount,
+  //     });
+  //   });
+
+  //   const combinedData = [["Designation", fromDepotName, toDepotshowName]];
+
+  //   const allDesignations = new Set([
+  //     ...fromDataMap.keys(),
+  //     ...toDataMap.keys(),
+  //   ]);
+
+  //   allDesignations.forEach((desg) => {
+  //     const fromCounts = fromDataMap.get(desg) || { ss: 0, mor: 0, vacancy: 0 };
+  //     const toCounts = toDataMap.get(desg) || { ss: 0, mor: 0, vacancy: 0 };
+
+  //     if (selectedMetric === "Combined") {
+  //       combinedData.push([
+  //         desg,
+  //         fromCounts.ss,
+  //         fromCounts.mor,
+  //         fromCounts.vacancy,
+  //         toCounts.ss,
+  //         toCounts.mor,
+  //         toCounts.vacancy,
+  //       ]);
+  //     } else {
+  //       const count =
+  //         selectedMetric === "Vacancy"
+  //           ? fromCounts.vacancy
+  //           : selectedMetric === "MOR"
+  //           ? fromCounts.mor
+  //           : fromCounts.ss;
+
+  //       combinedData.push([
+  //         desg,
+  //         count,
+  //         0, // Placeholder for the second value for non-combined
+  //       ]);
+  //     }
+  //   });
+
+  //   setChartData(combinedData);
+  // }, [fromPostWiseData, toPostWiseData, selectedMetric]);
+
+  useEffect(() => {
+    const fromDataMap = new Map();
+    const toDataMap = new Map();
+
+    // Prepare data based on selected metric
+    fromPostWiseData.forEach((post) => {
+      const designation = post.desg_name;
+      let count;
+      if (selectedMetric === "Vacancy") {
+        count = Number(post.ss) - Number(post.mor);
+      } else if (selectedMetric === "MOR") {
+        count = Number(post.mor);
+      } else if (selectedMetric === "SS") {
+        count = Number(post.ss);
+      }
+      fromDataMap.set(designation, count);
+    });
+
+    toPostWiseData.forEach((post) => {
+      const designation = post.desg_name;
+      let count;
+      if (selectedMetric === "Vacancy") {
+        count = Number(post.ss) - Number(post.mor);
+      } else if (selectedMetric === "MOR") {
+        count = Number(post.mor);
+      } else if (selectedMetric === "SS") {
+        count = Number(post.ss);
+      }
+      toDataMap.set(designation, count);
+    });
+
+    // Combine both datasets with annotations
+    const combinedData = [
+      [
+        "Designation",
+        fromDepotName,
+        // { role: "annotation" },
+        toDepotshowName,
+        // { role: "annotation" },
+      ],
+    ];
+
+    const allDesignations = new Set([
+      ...fromDataMap.keys(),
+      ...toDataMap.keys(),
+    ]);
+
+    allDesignations.forEach((desg) => {
+      const fromCount = fromDataMap.get(desg) || 0;
+      const toCount = toDataMap.get(desg) || 0;
+      combinedData.push([
+        desg,
+        fromCount, // Actual count for From Depot
+        // fromCount.toString(), // Ensure the annotation is a string
+        toCount, // Actual count for To Depot
+        // toCount.toString(), // Ensure the annotation is a string
+      ]);
+    });
+
+    setChartData(combinedData);
+  }, [fromPostWiseData, toPostWiseData, selectedMetric]);
+  useEffect(() => {
+    const combinedData = [
+      [
+        "Designation",
+        "SS",
+        "MOR",
+        "Vacancy (SS - MOR)",
+        "SS (To)",
+        "MOR (To)",
+        "Vacancy (To)",
+      ],
+    ];
+
+    const fromDataMap = new Map();
+    const toDataMap = new Map();
+
+    // Prepare data for SS, MOR, and Vacancy from fromPostWiseData
+    fromPostWiseData.forEach((post) => {
+      const designation = post.desg_name;
+      const ssCount = Number(post.ss);
+      const morCount = Number(post.mor);
+      const vacancyCount = ssCount - morCount;
+
+      fromDataMap.set(designation, {
+        ss: ssCount,
+        mor: morCount,
+        vacancy: vacancyCount,
+      });
+    });
+
+    // Prepare data for SS, MOR, and Vacancy from toPostWiseData
+    toPostWiseData.forEach((post) => {
+      const designation = post.desg_name;
+      const ssCount = Number(post.ss);
+      const morCount = Number(post.mor);
+      const vacancyCount = ssCount - morCount;
+
+      toDataMap.set(designation, {
+        ss: ssCount,
+        mor: morCount,
+        vacancy: vacancyCount,
+      });
+    });
+
+    const allDesignations = new Set([
+      ...fromDataMap.keys(),
+      ...toDataMap.keys(),
+    ]);
+
+    allDesignations.forEach((desg) => {
+      const fromCounts = fromDataMap.get(desg) || { ss: 0, mor: 0, vacancy: 0 };
+      const toCounts = toDataMap.get(desg) || { ss: 0, mor: 0, vacancy: 0 };
+
+      combinedData.push([
+        desg,
+        fromCounts.ss,
+        fromCounts.mor,
+        fromCounts.vacancy,
+        toCounts.ss,
+        toCounts.mor,
+        toCounts.vacancy,
+      ]);
+    });
+
+    setCombinedChartData(combinedData);
+  }, [fromPostWiseData, toPostWiseData, selectedMetric]);
 
   return (
     <Container>
@@ -210,8 +438,25 @@ function Transfer() {
             <Card.Body>
               <Form>
                 <InputGroup className="mb-3">
-                  <Form.Select
+                  {/* <Form.Select
                     aria-label="Select From Depot"
+                    value={selectedFromDepot}
+                    onChange={handleFromDepotChange}
+                  >
+                    <option value="">Select Depot</option>
+                    {depots?.map((depot) => (
+                      // <option key={depot.depo_id} value={depot.depo_id}>
+                      //   {depot.depot_name}
+                      <option
+                        key={depot.depo_id}
+                        value={`${depot.depo_id}-${depot.depot_name}`}
+                      >
+                        {depot.depot_name}
+                      </option>
+                    ))}
+                  </Form.Select> */}
+
+                  <Form.Select
                     value={selectedFromDepot}
                     onChange={handleFromDepotChange}
                   >
@@ -222,6 +467,11 @@ function Transfer() {
                       </option>
                     ))}
                   </Form.Select>
+
+                  {/* Display the selected depot name */}
+                  {/* {selectedFromDepot && (
+                    <p>Selected Depot Name: {fromDepotName}</p>
+                  )} */}
                 </InputGroup>
                 <h6>Employees</h6>
                 <Form>
@@ -246,7 +496,6 @@ function Transfer() {
                               }
                             />
                           </td>
-                          {console.log("employee", employee)}
                           <td>{employee.sr_no}</td>
                           <td>{employee.emp_name}</td>
                           <td>{employee.post}</td>
@@ -361,11 +610,162 @@ function Transfer() {
           </Card>
         </Col>
 
+        {/* <Col md={4}>
+          <h5>Select different type data option</h5>
+          <Dropdown>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              {selectedMetric}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => handleMetricChange("Vacancy")}>
+                Vacancy
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleMetricChange("MOR")}>
+                MOR
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleMetricChange("SS")}>
+                SS
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleMetricChange("Combined")}>
+                Combined
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          <Card className="mt-4">
+            <Card.Header className="custom-card-header">
+              Designation Wise Staff Vacancy graph
+            </Card.Header>
+            {console.log(chartData)}
+            <Card.Body>
+              <Chart
+                chartType="Bar"
+                width="100%"
+                height="400px"
+                data={chartData} // Use your dynamic chartData here
+                options={{
+                  title: "Designation Wise Staff Count Comparison",
+                  chartArea: { width: "70%" },
+                  hAxis: {
+                    title: "Count",
+                    minValue: 0,
+                    role: "style",
+                  },
+                  vAxis: {
+                    title: "Designation",
+                  },
+                  legend: { position: "bottom" },
+                  bars: "horizontal",
+                  annotations: {
+                    textStyle: {
+                      fontSize: 12,
+                      color: "#000000",
+                      auraColor: "none",
+                    },
+                  },
+                  bar: { groupWidth: "75%" },
+                }}
+              />
+            </Card.Body>
+          </Card> */}
+
         <Col
           md={4}
-          className="d-flex align-items-center justify-content-center"
+          // className="d-flex align-items-center justify-content-center"
         >
-          <div className="d-grid gap-2">
+          <h5>Select diffrent type data option</h5>
+          <Dropdown>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              {selectedMetric}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => handleMetricChange("Vacancy")}>
+                Vacancy
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleMetricChange("MOR")}>
+                MOR
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleMetricChange("SS")}>
+                SS
+              </Dropdown.Item>
+              {/* <Dropdown.Item onClick={() => handleMetricChange("Combined")}>
+                Combined
+              </Dropdown.Item> */}
+            </Dropdown.Menu>
+          </Dropdown>{" "}
+          <Card className="mt-4">
+            <Card.Header className="custom-card-header">
+              Designation Wise Staff Vacancy graph
+            </Card.Header>
+            {console.log(chartData)}
+            <Card.Body>
+              <Chart
+                chartType="Bar"
+                width="100%"
+                height="400px"
+                data={chartData} // Use your dynamic chartData here
+                options={{
+                  title: "Designation Wise Staff Count Comparison",
+                  chartArea: { width: "70%" }, // Adjusted to give more space for annotations
+                  hAxis: {
+                    title: "Count",
+                    minValue: 0,
+                    role: "style",
+                  },
+                  vAxis: {
+                    title: "Designation",
+                  },
+                  legend: { position: "bottom" },
+                  bars: "horizontal", // Horizontal bars
+                  annotations: {
+                    textStyle: {
+                      fontSize: 12,
+                      color: "#000000", // Change color for better visibility
+                      auraColor: "none",
+                    },
+                  },
+                  bar: { groupWidth: "75%" }, // Adjust the width of the bars
+                }}
+              />
+            </Card.Body>
+          </Card>
+          <Card className="mt-4">
+            <Card.Header className="custom-card-header">
+              Designation Wise Staff Combined Metric Graph
+            </Card.Header>
+            <Card.Body>
+              <Chart
+                chartType="Bar"
+                width="100%"
+                height="400px"
+                data={combinedChartData} // Use the combinedChartData here
+                options={{
+                  title: "Designation Wise Staff Combined Metric Comparison",
+                  chartArea: { width: "70%" },
+                  hAxis: {
+                    title: "Count",
+                    minValue: 0,
+                    role: "style",
+                  },
+                  vAxis: {
+                    title: "Designation",
+                  },
+                  legend: { position: "bottom" },
+                  bars: "horizontal",
+                  annotations: {
+                    textStyle: {
+                      fontSize: 12,
+                      color: "#000000",
+                      auraColor: "none",
+                    },
+                  },
+                  bar: { groupWidth: "75%" },
+                }}
+              />
+            </Card.Body>
+          </Card>
+          <Card>
             <Button
               onClick={handleTransfer}
               disabled={!selectedEmployees.length}
@@ -374,7 +774,7 @@ function Transfer() {
             >
               Transfer →
             </Button>{" "}
-          </div>
+          </Card>
         </Col>
 
         <Col md={4}>
@@ -413,16 +813,7 @@ function Transfer() {
                       <tbody>
                         {toDepotEmployees.map((employee) => (
                           <tr key={employee.emp_id}>
-                            <td>
-                              {employee.sr_no}
-                              {/* <Form.Check
-                                type="checkbox"
-                                onChange={(e) =>
-                                  handleEmployeeSelection(e, employee)
-                                }
-                                disabled
-                              /> */}
-                            </td>
+                            <td>{employee.sr_no}</td>
                             <td>{employee.emp_name}</td>
                             <td>{employee.post}</td>
                             <td>{employee.rating}</td>
@@ -454,14 +845,6 @@ function Transfer() {
                       ))}
                     </tbody>
                   </Table>
-
-                  {/* {transferredEmployees.map((employee) => (
-                    <ListGroup.Item key={employee.emp_id}>
-                      <strong>Name:-</strong>
-                      {employee.emp_name}
-                      <strong>PF No.</strong>:{employee.pf_no}
-                    </ListGroup.Item>
-                  ))} */}
                 </ListGroup>
               </Form>
             </Card.Body>
@@ -535,7 +918,6 @@ function Transfer() {
                         <td>{Number(post.ss) - Number(post.mor)}</td>
                       </tr>
                     ))}
-                    {/* Total Calculation Row */}
                     <tr className="font-weight-bold">
                       <td className="text-secondary mb-3">
                         <strong>Total</strong>

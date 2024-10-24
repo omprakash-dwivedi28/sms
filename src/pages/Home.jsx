@@ -6,6 +6,8 @@ import Image from "react-bootstrap/Image";
 import smsImage from "../Image/sms.jpeg";
 import Ratio from "react-bootstrap/Ratio";
 import Slider from "../components/NavBar/Slider";
+// import Anni from "../components/NavBar/Anni";
+import "./Home.css"; // Custom CSS file
 
 function Home() {
   return (

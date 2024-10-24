@@ -1,0 +1,77 @@
+/* Container for the Anni cube, placed in the free space near the search bar */
+.anni-container {
+  position: absolute;
+  right: 100px; /* Adjust this value to control its position near the search bar */
+  top: 5px; /* Adjust this value to control the vertical alignment */
+  width: 80px;
+  height: 80px;
+  z-index: 999;
+}
+
+/* Cube styling */
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: rotate 20s infinite linear;
+}
+
+.side {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #fff;
+}
+
+/* Different colors for each cube side */
+.front {
+  background-color: rgba(255, 0, 0, 0.8);
+  transform: translateZ(40px);
+}
+.back {
+  background-color: rgba(0, 255, 0, 0.8);
+  transform: rotateY(180deg) translateZ(40px);
+}
+.left {
+  background-color: rgba(0, 0, 255, 0.8);
+  transform: rotateY(-90deg) translateZ(40px);
+}
+.right {
+  background-color: rgba(255, 255, 0, 0.8);
+  transform: rotateY(90deg) translateZ(40px);
+}
+.top {
+  background-color: rgba(255, 165, 0, 0.8);
+  transform: rotateX(90deg) translateZ(40px);
+}
+.bottom {
+  background-color: rgba(128, 0, 128, 0.8);
+  transform: rotateX(-90deg) translateZ(40px);
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+/* Responsive cube sizing for smaller screens */
+@media (max-width: 768px) {
+  .anni-container {
+    width: 60px;
+    height: 60px;
+    right: 70px;
+  }
+}
+
+@media (max-width: 576px) {
+  .anni-container {
+    width: 50px;
+    height: 50px;
+    right: 50px;
+  }
+}

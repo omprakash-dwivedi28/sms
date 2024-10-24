@@ -47,6 +47,8 @@ function EmpMaster() {
   const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
   const [selectededu, setSelectedEdu] = useState("");
   const [filteredSubskills, setFilteredSubskills] = useState([]);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
 
   const { depots, skills, subskills, gps, desgs, qualifications } =
     useGlobalContext();
@@ -102,6 +104,25 @@ function EmpMaster() {
     }
   };
 
+  const validateEmail = (inputEmail) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic regex for email validation
+    return emailRegex.test(inputEmail);
+  };
+
+  const handleEmailChange = (e) => {
+    const inputEmail = e.target.value;
+    setEmail(inputEmail);
+    setFormData({
+      ...formData,
+      email_id: e.target.value,
+    });
+    // Check if the email is valid
+    if (!validateEmail(inputEmail)) {
+      setResponseMessage("Invalid email address");
+    } else {
+      setResponseMessage("");
+    }
+  };
   const handleSubskillRatingChange = (subskill, rating, skillName) => {
     setFormData((prevData) => {
       const updatedSkills = prevData.skills.map((skillObj) => {
@@ -185,6 +206,10 @@ function EmpMaster() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validateEmail(email)) {
+      setResponseMessage("Please enter a valid email");
+      return;
+    }
     if (!isPFNoAvailable) {
       setResponseMessage("PF NO already exists. Please choose another.");
       return;
@@ -411,7 +436,7 @@ function EmpMaster() {
                     <Form.Control
                       name="email_id"
                       value={formData.email_id}
-                      onChange={handleChange}
+                      onChange={handleEmailChange}
                       aria-label="Email Id"
                       required
                     />
