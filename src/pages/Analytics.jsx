@@ -8,13 +8,17 @@ import { useGlobalContext } from "../context/GlobalContext";
 
 function Analytics() {
   const [chartType, setChartType] = useState("Scatter");
-  const [reportType, setReportType] = useState("Employee Report");
+  const [reportType, setReportType] = useState("Employee with skill");
   const { depots } = useGlobalContext();
   const [selectedDepot, setSelectedDepot] = useState("");
 
   const chartOptions = ["Scatter", "Bar", "Pie"];
 
-  const reportOptions = ["Employee Report", "Sales Report", "Finance Report"];
+  const reportOptions = [
+    "Employee with skill",
+    "Sales Report",
+    "Finance Report",
+  ];
 
   const handleDepotChange = (e) => {
     setSelectedDepot(e.target.value);

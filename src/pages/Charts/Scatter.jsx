@@ -5,8 +5,8 @@ function Scatter({ depot_id, reportType }) {
   const [chartData, setChartData] = useState([
     ["Employee Name", "Skill Rating"],
   ]);
+  const [options, setOptions] = useState({});
 
-  // Fetch data from PHP API based on depot_id and reportType
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -15,48 +15,77 @@ function Scatter({ depot_id, reportType }) {
         );
         const data = await response.json();
 
-        // Map the data into a format suitable for Google Scatter chart
-        const formattedData = [
-          ["Employee Name", "Skill Rating"],
-          ...data.map((item) => [
-            `${item.employee_name} (${item.sub_skill})`,
-            parseInt(item.rating, 10), // Parse rating as an integer
-          ]),
-        ];
+        // Format data based on reportType
+        let formattedData;
+        let chartOptions;
 
-        setChartData(formattedData); // Update chart data with the fetched data
+        if (reportType === "Employee with skill") {
+          formattedData = [
+            ["Employee Name", "Skill Rating"],
+            ...data.map((item) => [
+              `${item.employee_name} (${item.sub_skill})`,
+              parseInt(item.rating, 10),
+            ]),
+          ];
+          chartOptions = {
+            title: "Employee Skills vs Ratings",
+            legend: { position: "bottom" },
+            vAxis: { title: "Rating", viewWindow: { max: 10, min: 0 } },
+            hAxis: { title: "Employee" },
+            animation: { duration: 1000, easing: "out" },
+          };
+        } else if (reportType === "experience") {
+          formattedData = [
+            ["Employee Name", "Experience (Years)"],
+            ...data.map((item) => [
+              item.employee_name,
+              parseInt(item.experience, 10),
+            ]),
+          ];
+          chartOptions = {
+            title: "Employee Experience",
+            legend: { position: "bottom" },
+            vAxis: {
+              title: "Experience (Years)",
+              viewWindow: { max: 40, min: 0 },
+            },
+            hAxis: { title: "Employee" },
+            animation: { duration: 1000, easing: "out" },
+          };
+        } else if (reportType === "qualifications") {
+          formattedData = [
+            ["Employee Name", "Qualification Level"],
+            ...data.map((item) => [
+              item.employee_name,
+              parseInt(item.qualification_level, 10),
+            ]),
+          ];
+          chartOptions = {
+            title: "Employee Qualification Levels",
+            legend: { position: "bottom" },
+            vAxis: {
+              title: "Qualification Level",
+              viewWindow: { max: 5, min: 0 },
+            },
+            hAxis: { title: "Employee" },
+            animation: { duration: 1000, easing: "out" },
+          };
+        }
+
+        setChartData(formattedData);
+        setOptions(chartOptions);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
 
     if (depot_id && reportType) {
-      fetchData(); // Fetch data only when depot_id and reportType are available
+      fetchData();
     }
   }, [depot_id, reportType]);
 
-  const options = {
-    title: "Employee Skills vs Ratings",
-    legend: { position: "bottom" },
-    animation: {
-      duration: 1000,
-      easing: "out",
-    },
-    vAxis: {
-      viewWindow: {
-        max: 10,
-        min: 0,
-      },
-      title: "Rating",
-    },
-    hAxis: {
-      title: "Employee",
-    },
-  };
-
   return (
     <div>
-      {console.log(depot_id)}
       {depot_id && reportType ? (
         <Chart
           chartType="ScatterChart"
