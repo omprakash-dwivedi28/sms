@@ -124,6 +124,16 @@ function NavBar() {
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                   </NavDropdown>
+                  <NavDropdown
+                    title="Mutual Trnsfer Pages"
+                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                  >
+                    <NavDropdown.Item href="/Mutual transfer">
+                      
+                      Mutual Transfer Pages
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                  </NavDropdown>
                 </Nav>
               </Offcanvas.Body>
             </Navbar.Offcanvas>

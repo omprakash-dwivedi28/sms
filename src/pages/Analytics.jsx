@@ -14,11 +14,7 @@ function Analytics() {
 
   const chartOptions = ["Scatter", "Bar", "Pie"];
 
-  const reportOptions = [
-    "Employee with skill",
-    "Sales Report",
-    "Finance Report",
-  ];
+  const reportOptions = ["Employee with skill", "Depot. with SS", "Other"];
 
   const handleDepotChange = (e) => {
     setSelectedDepot(e.target.value);
@@ -40,50 +36,52 @@ function Analytics() {
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <Card>
-        <div style={{ marginBottom: "20px" }}>
-          <label htmlFor="chartType" style={{ marginRight: "10px" }}>
-            Select Chart Type:
-          </label>
-          <select
-            id="chartType"
-            value={chartType}
-            onChange={(e) => setChartType(e.target.value)}
-            style={{ padding: "5px", fontSize: "16px" }}
-          >
-            {chartOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <label htmlFor="chartType" style={{ marginRight: "10px" }}>
-            Select Depot:
-          </label>
-          <select value={selectedDepot} onChange={handleDepotChange}>
-            <option value="">Select Depot</option>
-            {depots?.map((depot) => (
-              <option key={depot.depo_id} value={depot.depo_id}>
-                {depot.depot_name}
-              </option>
-            ))}
-          </select>
+        <Card.Header className="custom-card-header">
+          <div style={{ marginBottom: "20px" }}>
+            <label htmlFor="chartType" style={{ marginRight: "10px" }}>
+              Select Chart Type:
+            </label>
+            <select
+              id="chartType"
+              value={chartType}
+              onChange={(e) => setChartType(e.target.value)}
+              style={{ padding: "5px", fontSize: "16px" }}
+            >
+              {chartOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            <label htmlFor="chartType" style={{ marginRight: "10px" }}>
+              Select Depot:
+            </label>
+            <select value={selectedDepot} onChange={handleDepotChange}>
+              <option value="">Select Depot</option>
+              {depots?.map((depot) => (
+                <option key={depot.depo_id} value={depot.depo_id}>
+                  {depot.depot_name}
+                </option>
+              ))}
+            </select>
 
-          <label htmlFor="reportType" style={{ marginRight: "10px" }}>
-            Select Report Type:
-          </label>
-          <select
-            id="reportType"
-            value={reportType}
-            onChange={(e) => setReportType(e.target.value)}
-            style={{ padding: "5px", fontSize: "16px" }}
-          >
-            {reportOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
+            <label htmlFor="reportType" style={{ marginRight: "10px" }}>
+              Select Report Type:
+            </label>
+            <select
+              id="reportType"
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+              style={{ padding: "5px", fontSize: "16px" }}
+            >
+              {reportOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        </Card.Header>
         <div style={{ marginTop: "30px" }}>{renderChart()}</div>
       </Card>
     </div>

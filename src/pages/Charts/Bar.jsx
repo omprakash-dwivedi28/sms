@@ -1,77 +1,117 @@
-import Chart from "react-google-charts";
 import React, { useEffect, useState } from "react";
+import { Chart } from "react-google-charts";
 
-function Bar({ depot_id, reportType }) {
-  console.log("Depot ID:", depot_id); // Check if depot_id is received
-  console.log("Report Type:", reportType); // Check if reportType is received
-  const [chartData, setChartData] = useState([
-    ["Employee Name", "Skill Rating", { role: "tooltip", type: "string" }],
-  ]);
+function Pie({ depot_id, reportType }) {
+  const [chartData, setChartData] = useState([["Category", "Value"]]);
 
-  // Fetch data from PHP API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `https://railwaymcq.com/sms/chartData.php?depot_id=${depot_id}`
-        );
+        let url = "";
+
+        if (reportType === "Employee with skill") {
+          url = `https://railwaymcq.com/sms/chartData.php?depot_id=${depot_id}`;
+        } else if (reportType === "Depot. with SS") {
+          url = `https://railwaymcq.com/sms/chartData1.php?depot_id=${depot_id}`;
+        } else if (reportType === "performance") {
+          url = `https://railwaymcq.com/sms/performanceData.php?depot_id=${depot_id}`;
+        }
+
+        const response = await fetch(url);
         const data = await response.json();
 
-        // Map the data into a format suitable for Google Bar chart with tooltips
-        const formattedData = [
-          [
-            "Employee Name",
-            "Skill Rating",
-            { role: "tooltip", type: "string" },
-          ],
-          ...data.map((item) => [
-            item.employee_name, // Employee name
-            parseFloat(item.rating), // Skill rating (ensure it's a float)
-            `${item.employee_name}: ${item.rating}`, // Tooltip with employee name and rating
-          ]),
-        ];
+        let formattedData;
 
-        setChartData(formattedData); // Update chart data with the fetched data
+        if (reportType === "Employee with skill") {
+          formattedData = [
+            [
+              "Employee Name",
+              "Skill Rating",
+              { role: "tooltip", type: "string" },
+            ],
+            ...data.map((item) => [
+              item.employee_name,
+              parseFloat(item.rating),
+              `${item.employee_name}: ${item.rating}`,
+            ]),
+          ];
+        } else if (reportType === "Depot. with SS") {
+          formattedData = [
+            [
+              "Desg Name",
+              "Sanctioned Strength",
+              "Man on Roll",
+              "Vacancy",
+              { role: "tooltip", type: "string" },
+            ],
+            ...data.map((item) => {
+              const ss = parseFloat(item.ss);
+              const mor = parseFloat(item.mor);
+              const vacancy = ss - mor;
+              return [
+                item.desg_name,
+                ss,
+                mor,
+                vacancy,
+                `${item.desg_name}: SS - ${ss}, MOR - ${mor}, Vacancy - ${vacancy}`,
+              ];
+            }),
+          ];
+        } else if (reportType === "performance") {
+          formattedData = [
+            [
+              "Employee Name",
+              "Performance Score",
+              { role: "tooltip", type: "string" },
+            ],
+            ...data.map((item) => [
+              item.employee_name,
+              parseFloat(item.performance_score),
+              `${item.employee_name}: ${item.performance_score}`,
+            ]),
+          ];
+        }
+
+        setChartData(formattedData);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
 
     if (depot_id && reportType) {
-      fetchData(); // Fetch data only when depot_id and reportType are available
+      fetchData();
     }
   }, [depot_id, reportType]);
 
   const options = {
-    title: "Employee Skills vs Ratings",
-    legend: { position: "none" }, // Hide legend
-    tooltip: { isHtml: true },
-    animation: {
-      duration: 1000,
-      easing: "out",
+    title:
+      reportType === "Employee with skill"
+        ? "Employee Skill Rating Distribution"
+        : reportType === "Depot. with SS"
+        ? "Depot Sanctioned Strength, Man on Roll, and Vacancy"
+        : "Employee Performance Distribution",
+    is3D: true,
+    bars: "horizontal",
+    pieSliceText: "percentage",
+    series: {
+      0: { label: "Sanctioned Strength" },
+      1: { label: "Man on Roll" },
+      2: { label: "Vacancy" },
     },
     hAxis: {
-      title: "Skill Rating",
       minValue: 0,
-      maxValue: 10,
     },
-    vAxis: {
-      title: "Employee Name",
-    },
-    bars: "horizontal", // Horizontal bars
-    height: 400,
   };
 
   return (
     <div>
-      {console.log(depot_id)}
       {depot_id && reportType ? (
         <Chart
-          chartType="BarChart"
-          width="100%"
-          height="400px"
+          chartType="BarChart" // Using BarChart to show multiple series data
           data={chartData}
           options={options}
+          width="100%"
+          height="400px"
         />
       ) : (
         <p>Please select a depot and report type to see the data.</p>
@@ -80,4 +120,4 @@ function Bar({ depot_id, reportType }) {
   );
 }
 
-export default Bar;
+export default Pie;
