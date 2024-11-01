@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-function Pie({ depot_id, reportType }) {
+function Bar({ depot_id, reportType }) {
   const [chartData, setChartData] = useState([["Category", "Value"]]);
 
   useEffect(() => {
@@ -11,7 +11,7 @@ function Pie({ depot_id, reportType }) {
 
         if (reportType === "Employee with skill") {
           url = `https://railwaymcq.com/sms/chartData.php?depot_id=${depot_id}`;
-        } else if (reportType === "Depot. with SS") {
+        } else if (reportType === "Pin pointing chart") {
           url = `https://railwaymcq.com/sms/chartData1.php?depot_id=${depot_id}`;
         } else if (reportType === "performance") {
           url = `https://railwaymcq.com/sms/performanceData.php?depot_id=${depot_id}`;
@@ -35,7 +35,7 @@ function Pie({ depot_id, reportType }) {
               `${item.employee_name}: ${item.rating}`,
             ]),
           ];
-        } else if (reportType === "Depot. with SS") {
+        } else if (reportType === "Pin pointing chart") {
           formattedData = [
             [
               "Desg Name",
@@ -87,7 +87,7 @@ function Pie({ depot_id, reportType }) {
     title:
       reportType === "Employee with skill"
         ? "Employee Skill Rating Distribution"
-        : reportType === "Depot. with SS"
+        : reportType === "Pin pointing chart"
         ? "Depot Sanctioned Strength, Man on Roll, and Vacancy"
         : "Employee Performance Distribution",
     is3D: true,
@@ -120,4 +120,4 @@ function Pie({ depot_id, reportType }) {
   );
 }
 
-export default Pie;
+export default Bar;

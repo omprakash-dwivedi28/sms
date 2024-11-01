@@ -19,6 +19,8 @@ import { FaHome } from "react-icons/fa";
 import "../css/NavBar.css";
 import "animate.css";
 import Anni from "./Anni";
+import { FaSearchPlus } from "react-icons/fa";
+import { MdAppRegistration } from "react-icons/md";
 
 function NavBar() {
   return (
@@ -115,24 +117,33 @@ function NavBar() {
                     </NavDropdown.Item>
                   </NavDropdown>
                   <NavDropdown
-                    title="Analytics Pages"
+                    title="Visual Analytics Pages"
                     id={`offcanvasNavbarDropdown-expand-${expand}`}
                   >
                     <NavDropdown.Item href="/Analytics">
-                      <FaChartBar style={{ color: "blue" }} />
-                      Visual Analytics Hub
+                      <FaChartBar style={{ color: "blue" }} /> Depot wise
+                      Analytics
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
+                    <NavDropdown.Item href="/EmpAnalytics">
+                      <FaChartBar style={{ color: "blue" }} /> Employee wise
+                      Analytics
+                    </NavDropdown.Item>
                   </NavDropdown>
+
                   <NavDropdown
-                    title="Mutual Trnsfer Pages"
+                    title="Mutual Transfer Pages"
                     id={`offcanvasNavbarDropdown-expand-${expand}`}
                   >
-                    <NavDropdown.Item href="/Mutual transfer">
-                      
-                      Mutual Transfer Pages
+                    <NavDropdown.Item href="/MutualsearchRegistration">
+                      <MdAppRegistration style={{ color: "blue" }} />
+                      Mutual Transfer Search Registration
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
+                    <NavDropdown.Item href="/MutualTransferSearch">
+                      <FaSearchPlus style={{ color: "blue" }} />
+                      Mutual Transfer Search
+                    </NavDropdown.Item>
                   </NavDropdown>
                 </Nav>
               </Offcanvas.Body>

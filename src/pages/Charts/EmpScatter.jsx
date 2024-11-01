@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Chart from "react-google-charts";
 
-function Scatter({ depot_id, reportType }) {
+function EmpScatter({ emp_id, reportType }) {
   const [chartData, setChartData] = useState([
     ["Employee Name", "Skill Rating"],
   ]);
@@ -14,16 +14,17 @@ function Scatter({ depot_id, reportType }) {
 
         if (reportType === "Employee with skill") {
           response = await fetch(
-            `https://railwaymcq.com/sms/chartData.php?depot_id=${depot_id}`
+            `https://railwaymcq.com/sms/empwiseChartData.php?emp_id=${emp_id}`
           );
           data = await response.json();
+          console.log("Data", data);
 
           // Format data for "Employee with skill"
           setChartData([
-            ["Employee Name", "Skill Rating"],
+            ["Skill Name", "Skill Rating"],
             ...data.map((item) => [
-              `${item.employee_name} (${item.sub_skill})`,
-              parseInt(item.rating, 10),
+              `${item.skill} (${item.skill_rating})`,
+              parseInt(item.skill_rating, 10),
             ]),
           ]);
 
@@ -36,34 +37,9 @@ function Scatter({ depot_id, reportType }) {
           });
         } else if (reportType === "Pin pointing chart") {
           const response = await fetch(
-            `https://railwaymcq.com/sms/chartData1.php?depot_id=${depot_id}`
+            `https://railwaymcq.com/sms/chartData1.php?emp_id=${emp_id}`
           );
           const data = await response.json();
-
-          // Format data for MOR and Vacancy in Scatter chart
-          // setChartData([
-          //   ["Designation", "Count", { role: "style" }],
-          //   ...data.flatMap((item) => [
-          //     // SS point
-          //     [
-          //       "",
-          //       parseInt(item.ss, 10),
-          //       "point { size: 7; shape-type: square; fill-color: #0F9D58; }",
-          //     ],
-          //     // MOR point
-          //     [
-          //       item.desg_name,
-          //       parseInt(item.mor, 10),
-          //       "point { size: 7; shape-type: circle; fill-color: #4285F4; }",
-          //     ],
-          //     // Vacancy point
-          //     [
-          //       "",
-          //       parseInt(item.ss, 10) - parseInt(item.mor, 10),
-          //       "point { size: 7; shape-type: triangle; fill-color: #DB4437; }",
-          //     ],
-          //   ]),
-          // ]);
 
           // Prepare the data for the chart
           const chartData = [["Designation", "SS", "MOR", "Vacancy"]];
@@ -81,37 +57,9 @@ function Scatter({ depot_id, reportType }) {
           });
 
           setChartData(chartData);
-          // setOptions({
-          //   title: "Designation-wise SS, MOR, and Vacancy",
-          //   legend: { position: "right", alignment: "center" },
-          //   hAxis: { title: "Designation" },
-          //   vAxis: { title: "Count", viewWindow: { min: 0 } },
-          //   animation: { duration: 1000, easing: "out" },
-          //   series: [
-          //     {
-          //       labelInLegend: "Sanctioned Strength (SS)",
-          //       color: "#0F9D58",
-          //       pointShape: { type: "square" },
-          //       // Additional properties can be added here
-          //     },
-          //     {
-          //       labelInLegend: "Man on Roll (MOR)",
-          //       color: "#4285F4",
-          //       pointShape: { type: "circle" },
-          //       // Additional properties can be added here
-          //     },
-          //     {
-          //       labelInLegend: "Vacancy",
-          //       color: "#DB4437",
-          //       pointShape: { type: "triangle" },
-          //       // Additional properties can be added here
-          //     },
-          //   ],
-          //   tooltip: { isHtml: true },
-          // });
         } else if (reportType === "qualifications") {
           response = await fetch(
-            `https://railwaymcq.com/sms/chartData2.php?depot_id=${depot_id}`
+            `https://railwaymcq.com/sms/chartData2.php?emp_id=${emp_id}`
           );
           data = await response.json();
 
@@ -140,14 +88,14 @@ function Scatter({ depot_id, reportType }) {
       }
     };
 
-    if (depot_id && reportType) {
+    if (emp_id && reportType) {
       fetchData();
     }
-  }, [depot_id, reportType]);
+  }, [emp_id, reportType]);
 
   return (
     <div>
-      {depot_id && reportType ? (
+      {emp_id && reportType ? (
         <Chart
           chartType="ScatterChart"
           width="100%"
@@ -162,4 +110,4 @@ function Scatter({ depot_id, reportType }) {
   );
 }
 
-export default Scatter;
+export default EmpScatter;

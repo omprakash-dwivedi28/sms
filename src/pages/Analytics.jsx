@@ -14,7 +14,7 @@ function Analytics() {
 
   const chartOptions = ["Scatter", "Bar", "Pie"];
 
-  const reportOptions = ["Employee with skill", "Depot. with SS", "Other"];
+  const reportOptions = ["Employee with skill", "Pin pointing chart", "Other"];
 
   const handleDepotChange = (e) => {
     setSelectedDepot(e.target.value);

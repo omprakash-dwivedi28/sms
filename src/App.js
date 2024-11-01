@@ -14,7 +14,10 @@ import EducationMaster from "./pages/EducationMaster";
 import DepotWiseEmpSkillData from "./pages/DepotWiseEmpSkillData";
 import EditableEmpMaster from "./pages/EditableEmpMaster";
 import Analytics from "./pages/Analytics";
-// import Scatter from "./pages/Charts/Scatter";
+import EmpAnalytics from "./pages/EmpAnalytics";
+
+import MutualTransferSearch from "./pages/MutualTransferSearch ";
+import MutualsearchRegistration from "./pages/MutualsearchRegistration";
 
 function App() {
   return (
@@ -42,7 +45,15 @@ function App() {
           />
           <Route path="/EditableEmpMaster" element={<EditableEmpMaster />} />
           <Route path="/Analytics" element={<Analytics />} />
-          {/* <Route path="/Scatter" element={<Scatter />} /> */}
+          <Route path="/EmpAnalytics" element={<EmpAnalytics />} />
+          <Route
+            path="/MutualTransferSearch"
+            element={<MutualTransferSearch />}
+          />
+          <Route
+            path="/MutualsearchRegistration"
+            element={<MutualsearchRegistration />}
+          />
         </Routes>
       </Router>
     </div>

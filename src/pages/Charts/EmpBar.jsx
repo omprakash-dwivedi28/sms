@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-function Pie({ depot_id, reportType }) {
+function EmpBar({ emp_id, reportType }) {
   const [chartData, setChartData] = useState([["Category", "Value"]]);
 
   useEffect(() => {
@@ -10,11 +10,11 @@ function Pie({ depot_id, reportType }) {
         let url = "";
 
         if (reportType === "Employee with skill") {
-          url = `https://railwaymcq.com/sms/chartData.php?depot_id=${depot_id}`;
+          url = `https://railwaymcq.com/sms/empwiseChartData.php?emp_id=${emp_id}`;
         } else if (reportType === "Pin pointing chart") {
-          url = `https://railwaymcq.com/sms/chartData1.php?depot_id=${depot_id}`;
+          url = `https://railwaymcq.com/sms/chartData1.php?emp_id=${emp_id}`;
         } else if (reportType === "performance") {
-          url = `https://railwaymcq.com/sms/performanceData.php?depot_id=${depot_id}`;
+          url = `https://railwaymcq.com/sms/performanceData.php?emp_id=${emp_id}`;
         }
 
         const response = await fetch(url);
@@ -24,31 +24,34 @@ function Pie({ depot_id, reportType }) {
 
         if (reportType === "Employee with skill") {
           formattedData = [
-            [
-              "Employee Name",
-              "Skill Rating",
-              { role: "tooltip", type: "string" },
-            ],
+            ["Skill Name", "Skill Rating", { role: "tooltip", type: "string" }],
             ...data.map((item) => [
-              item.employee_name,
-              parseFloat(item.rating),
-              `${item.employee_name}: ${item.rating}`,
+              item.skill,
+              parseFloat(item.skill_rating),
+              `${item.skill}: ${item.skill_rating}`,
             ]),
           ];
         } else if (reportType === "Pin pointing chart") {
           formattedData = [
             [
               "Desg Name",
-              "Sanctioned Strength (%)",
-              "Sanctioned Strength (%)",
+              "Sanctioned Strength",
+              "Man on Roll",
+              "Vacancy",
               { role: "tooltip", type: "string" },
             ],
-            ...data.map((item) => [
-              item.desg_name,
-              parseFloat(item.ss),
-              parseFloat(item.ss),
-              `${item.desg_name}: ${item.ss} nos`,
-            ]),
+            ...data.map((item) => {
+              const ss = parseFloat(item.ss);
+              const mor = parseFloat(item.mor);
+              const vacancy = ss - mor;
+              return [
+                item.desg_name,
+                ss,
+                mor,
+                vacancy,
+                `${item.desg_name}: SS - ${ss}, MOR - ${mor}, Vacancy - ${vacancy}`,
+              ];
+            }),
           ];
         } else if (reportType === "performance") {
           formattedData = [
@@ -71,27 +74,40 @@ function Pie({ depot_id, reportType }) {
       }
     };
 
-    if (depot_id && reportType) {
+    if (emp_id && reportType) {
       fetchData();
     }
-  }, [depot_id, reportType]);
+  }, [emp_id, reportType]);
 
   const options = {
     title:
       reportType === "Employee with skill"
         ? "Employee Skill Rating Distribution"
         : reportType === "Pin pointing chart"
-        ? "Employee Desg. with SS"
+        ? "Depot Sanctioned Strength, Man on Roll, and Vacancy"
         : "Employee Performance Distribution",
+    bars: "vertical", // This sets the bar chart to vertical
     is3D: true,
     pieSliceText: "percentage",
+    series: {
+      0: { label: "Sanctioned Strength" },
+      1: { label: "Man on Roll" },
+      2: { label: "Vacancy" },
+    },
+    vAxis: {
+      title: "Value",
+      minValue: 0,
+    },
+    hAxis: {
+      title: "Category",
+    },
   };
 
   return (
     <div>
-      {depot_id && reportType ? (
+      {emp_id && reportType ? (
         <Chart
-          chartType="PieChart"
+          chartType="BarChart"
           data={chartData}
           options={options}
           width="100%"
@@ -104,4 +120,4 @@ function Pie({ depot_id, reportType }) {
   );
 }
 
-export default Pie;
+export default EmpBar;
