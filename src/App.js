@@ -18,6 +18,7 @@ import EmpAnalytics from "./pages/EmpAnalytics";
 
 import MutualTransferSearch from "./pages/MutualTransferSearch ";
 import MutualsearchRegistration from "./pages/MutualsearchRegistration";
+import LogIn from "./pages/LogIn";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
             path="/MutualsearchRegistration"
             element={<MutualsearchRegistration />}
           />
+          <Route path="/LogIn" element={<LogIn />} />
         </Routes>
       </Router>
     </div>

@@ -5,13 +5,16 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GlobalProvider } from "./context/GlobalContext";
+import { UserProvider } from "./context/UserContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <GlobalProvider>
-      <App />
-    </GlobalProvider>
+    <UserProvider>
+      <GlobalProvider>
+        <App />
+      </GlobalProvider>
+    </UserProvider>
   </React.StrictMode>
 );
 

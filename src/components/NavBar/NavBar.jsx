@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/UserContext";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -6,163 +8,153 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { SiHomeassistantcommunitystore } from "react-icons/si";
-import { FaUserPlus } from "react-icons/fa6";
-import { MdOutlineEditNote } from "react-icons/md";
-import { GiSkills } from "react-icons/gi";
-import { VscMortarBoard } from "react-icons/vsc";
-import { MdTransferWithinAStation } from "react-icons/md";
-import { VscSignIn } from "react-icons/vsc";
-import { AiOutlineConsoleSql } from "react-icons/ai";
-import { FaChartBar } from "react-icons/fa";
-import { FaHome } from "react-icons/fa";
-import "../css/NavBar.css";
-import "animate.css";
 import Anni from "./Anni";
-import { FaSearchPlus } from "react-icons/fa";
-import { MdAppRegistration } from "react-icons/md";
+import "../css/NavBar.css";
 
 function NavBar() {
+  const { logoutUser, user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Load user from localStorage if available
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, [setUser]);
+
+  const handleLoginClick = () => {
+    navigate("/LogIn");
+  };
+
+  const handleLogoutClick = () => {
+    logoutUser();
+    localStorage.removeItem("sessionToken"); // Clear token on logout
+    navigate("/LogIn"); // Redirect to login page
+  };
+
   return (
-    <>
-      {[false].map((expand) => (
-        <Navbar key={expand} expand={expand} className="bg-body-tertiary mb-3">
-          <Container fluid>
-            <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
-            <Navbar.Brand href="#" className="move-left-to-right">
-              <strong>Welcome to staff management system!!!!!!!</strong>
-            </Navbar.Brand>
-            <Navbar.Offcanvas
-              id={`offcanvasNavbar-expand-${expand}`}
-              aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
-              placement="start"
-            >
-              <Offcanvas.Header closeButton>
-                <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`}>
-                  Staff Mgmt
-                </Offcanvas.Title>
-              </Offcanvas.Header>
-              <Offcanvas.Body>
-                <Nav className="flex-grow-1 pe-3">
-                  <Nav.Link href="/">
-                    <FaHome style={{ color: "blue" }} />
-                    Home
-                  </Nav.Link>
-                  <NavDropdown
-                    title="Master Pages"
-                    id={`offcanvasNavbarDropdown-expand-${expand}`}
-                  >
-                    <NavDropdown.Item href="/DepotMaster">
-                      <SiHomeassistantcommunitystore
-                        style={{ color: "blue" }}
-                      />
+    <Navbar expand="lg" className="bg-body-tertiary mb-3">
+      <Container fluid>
+        <Navbar.Toggle aria-controls="offcanvasNavbar" />
+
+        <Navbar.Offcanvas
+          id="offcanvasNavbar"
+          aria-labelledby="offcanvasNavbarLabel"
+          placement="start"
+        >
+          <Offcanvas.Body>
+            <Nav className="flex-grow-1 pe-3">
+              <Nav.Link onClick={() => navigate("/")}>Home</Nav.Link>
+              {user && (
+                <>
+                  <NavDropdown title="Master Pages" id="master-pages-dropdown">
+                    <NavDropdown.Item onClick={() => navigate("/DepotMaster")}>
                       Depot Master
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/EmpMaster">
-                      <FaUserPlus style={{ color: "blue" }} />
+                    <NavDropdown.Item onClick={() => navigate("/EmpMaster")}>
                       Employee Master
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/EditableEmpMaster">
-                      <MdOutlineEditNote style={{ color: "blue" }} />
+                    <NavDropdown.Item
+                      onClick={() => navigate("/EditableEmpMaster")}
+                    >
                       Editable Employee Master
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/SkillMaster">
-                      <GiSkills style={{ color: "blue" }} /> Skill Master
+                    <NavDropdown.Item onClick={() => navigate("/SkillMaster")}>
+                      Skill Master
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/EducationMaster">
-                      <VscMortarBoard style={{ color: "blue" }} /> Education
-                      Master
+                    <NavDropdown.Item
+                      onClick={() => navigate("/EducationMaster")}
+                    >
+                      Education Master
                     </NavDropdown.Item>
                   </NavDropdown>
+
                   <NavDropdown
                     title="Operational Pages"
-                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                    id="operational-pages-dropdown"
                   >
-                    <NavDropdown.Item href="/Transfer">
-                      <MdTransferWithinAStation style={{ color: "blue" }} />
+                    <NavDropdown.Item onClick={() => navigate("/Transfer")}>
                       Employee Transfer
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/PostEmployeeModification">
-                      <VscSignIn style={{ color: "blue" }} />
+                    <NavDropdown.Item
+                      onClick={() => navigate("/PostEmployeeModification")}
+                    >
                       Employee Joining Formalities
                     </NavDropdown.Item>
                   </NavDropdown>
+
                   <NavDropdown
                     title="Analysis & Report"
-                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                    id="analysis-report-dropdown"
                   >
-                    <NavDropdown.Item href="/empAnalysis">
-                      <AiOutlineConsoleSql style={{ color: "blue" }} />
+                    <NavDropdown.Item onClick={() => navigate("/empAnalysis")}>
                       Employee Transfer Analysis
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/EmpTransferHistori">
-                      <AiOutlineConsoleSql style={{ color: "blue" }} />
+                    <NavDropdown.Item
+                      onClick={() => navigate("/EmpTransferHistori")}
+                    >
                       Employee Transfer History
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/depotWiseAnalysis">
-                      <AiOutlineConsoleSql style={{ color: "blue" }} />
+                    <NavDropdown.Item
+                      onClick={() => navigate("/depotWiseAnalysis")}
+                    >
                       All Depot Analysis
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/DepotWiseEmpSkillData">
-                      <AiOutlineConsoleSql style={{ color: "blue" }} />
+                    <NavDropdown.Item
+                      onClick={() => navigate("/DepotWiseEmpSkillData")}
+                    >
                       Depot Wise Employee & Skill Data
                     </NavDropdown.Item>
                   </NavDropdown>
+
                   <NavDropdown
                     title="Visual Analytics Pages"
-                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                    id="visual-analytics-dropdown"
                   >
-                    <NavDropdown.Item href="/Analytics">
-                      <FaChartBar style={{ color: "blue" }} /> Depot wise
-                      Analytics
+                    <NavDropdown.Item onClick={() => navigate("/Analytics")}>
+                      Depot wise Analytics
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/EmpAnalytics">
-                      <FaChartBar style={{ color: "blue" }} /> Employee wise
-                      Analytics
+                    <NavDropdown.Item onClick={() => navigate("/EmpAnalytics")}>
+                      Employee wise Analytics
                     </NavDropdown.Item>
                   </NavDropdown>
 
                   <NavDropdown
                     title="Mutual Transfer Pages"
-                    id={`offcanvasNavbarDropdown-expand-${expand}`}
+                    id="mutual-transfer-dropdown"
                   >
-                    <NavDropdown.Item href="/MutualsearchRegistration">
-                      <MdAppRegistration style={{ color: "blue" }} />
+                    <NavDropdown.Item
+                      onClick={() => navigate("/MutualsearchRegistration")}
+                    >
                       Mutual Transfer Search Registration
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="/MutualTransferSearch">
-                      <FaSearchPlus style={{ color: "blue" }} />
+                    <NavDropdown.Item
+                      onClick={() => navigate("/MutualTransferSearch")}
+                    >
                       Mutual Transfer Search
                     </NavDropdown.Item>
                   </NavDropdown>
-                </Nav>
-              </Offcanvas.Body>
-            </Navbar.Offcanvas>
-            <Form className="d-flex ms-auto">
-              <Form.Control
-                type="search"
-                placeholder="Search"
-                className="me-2"
-                aria-label="Search"
-              />
-              <Button variant="outline-success">Search</Button>
-            </Form>
-            {/* Anni component shifted to fit the search bar free space */}
-            <Anni />
-          </Container>
-        </Navbar>
-      ))}
-    </>
+                </>
+              )}
+            </Nav>
+          </Offcanvas.Body>
+        </Navbar.Offcanvas>
+
+        <Form className="d-flex ms-auto">
+          {user ? (
+            <Button variant="outline-danger" onClick={handleLogoutClick}>
+              Logout
+            </Button>
+          ) : (
+            <Button variant="outline-primary" onClick={handleLoginClick}>
+              Login
+            </Button>
+          )}
+        </Form>
+        <Anni />
+      </Container>
+    </Navbar>
   );
 }
 

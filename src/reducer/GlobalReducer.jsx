@@ -102,6 +102,44 @@ const GlobalReducer = (state, action) => {
         desg_loding: false,
         desg_error: true,
       };
+    //For Zone Divesion featching
+    case "GET_ZONE_DIVISION_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        zone_division_loding: true,
+      };
+
+    case "GET_ZONE_DIVISION_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        zone_division_loding: false,
+        zone_division: action.payload,
+      };
+    case "GET_ZONE_DIVISION_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        zone_division_loding: false,
+        zone_division_error: true,
+      };
+    //For Zone Divesion featching
+    case "GET_DEPTT_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        deptt_loding: true,
+      };
+
+    case "GET_DEPTT_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        deptt_loding: false,
+        deptt: action.payload,
+      };
+    case "GET_DEPTT_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        deptt_loding: false,
+        deptt_error: true,
+      };
 
     //for Qualification
     case "GET_QUALI_MASTER_INFO_BEGIN":
@@ -121,6 +159,25 @@ const GlobalReducer = (state, action) => {
         ...state,
         quali_loading: false,
         quali_error: true,
+      };
+    //for APPOIMENT MODE
+    case "GET_APPMODE_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        appmode_loading: true,
+      };
+
+    case "GET_APPMODE_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        appmode_loading: false,
+        appmode: action.payload,
+      };
+    case "GET_APPMODE_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        appmode_loading: false,
+        appmode_error: true,
       };
     default:
       throw new Error(`No Matching "${action.type}" - action type`);

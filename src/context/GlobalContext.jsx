@@ -36,6 +36,18 @@ const initialState = {
   desg_loading: false,
   desgs: null,
   desg_error: false,
+
+  zone_division_loading: false,
+  zone_division: null,
+  zone_division_error: false,
+
+  deptt_loading: false,
+  deptt_division: null,
+  deptt_division_error: false,
+
+  appmode_loading: false,
+  appmode: null,
+  appmode_error: false,
 };
 
 const GlobalContext = createContext();
@@ -156,6 +168,63 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  const fetchAppMode = async () => {
+    const mode_flag = true;
+    dispatch({ type: "GET_APPMODE_MASTER_INFO_BEGIN" });
+    try {
+      const response = await fetch(
+        `https://railwaymcq.com/sms/gp_level.php?mode_flag=${mode_flag}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      dispatch({ type: "GET_APPMODE_MASTER_INFO_SUCCESS", payload: data });
+    } catch (error) {
+      console.error("Error fetching DESG_MASTER info:", error);
+      dispatch({ type: "GET_APPMODE_MASTER_INFO_ERROR" });
+    }
+  };
+
+  const fetchZoneDivision = async () => {
+    // const desg_flag = true;
+    dispatch({ type: "GET_ZONE_DIVISION_MASTER_INFO_BEGIN" });
+    try {
+      const response = await fetch(
+        `https://railwaymcq.com/sms/zone_division_api.php`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      dispatch({
+        type: "GET_ZONE_DIVISION_MASTER_INFO_SUCCESS",
+        payload: data,
+      });
+    } catch (error) {
+      console.error("Error fetching DESG_MASTER info:", error);
+      dispatch({ type: "GET_ZONE_DIVISION_MASTER_INFO_ERROR" });
+    }
+  };
+  const fetchDeptt = async () => {
+    // const desg_flag = true;
+    dispatch({ type: "GET_DEPTT_MASTER_INFO_BEGIN" });
+    try {
+      const response = await fetch(`https://railwaymcq.com/sms/deptt_api.php`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      dispatch({
+        type: "GET_DEPTT_MASTER_INFO_SUCCESS",
+        payload: data,
+      });
+    } catch (error) {
+      console.error("Error fetching DESG_MASTER info:", error);
+      dispatch({ type: "GET_DEPTT_MASTER_INFO_ERROR" });
+    }
+  };
+
   useEffect(() => {
     fetchDepotInfo();
     fetchSkillMaster();
@@ -163,6 +232,9 @@ export const GlobalProvider = ({ children }) => {
     fetchGPMaster();
     fetchDESGMaster();
     fetchQuaification();
+    fetchZoneDivision();
+    fetchDeptt();
+    fetchAppMode();
   }, []);
 
   return (
@@ -175,6 +247,9 @@ export const GlobalProvider = ({ children }) => {
         fetchGPMaster,
         fetchDESGMaster,
         fetchQuaification,
+        fetchZoneDivision,
+        fetchDeptt,
+        fetchAppMode,
       }}
     >
       {children}
