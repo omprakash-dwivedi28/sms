@@ -39,6 +39,26 @@ const GlobalReducer = (state, action) => {
         skill_loding: false,
         skill_error: true,
       };
+    // For community master data
+
+    case "GET_COMMUNITY_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        community_loding: true,
+      };
+
+    case "GET_COMMUNITY_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        community_loding: false,
+        community: action.payload,
+      };
+    case "GET_COMMUNITY_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        community_loding: false,
+        community_error: true,
+      };
 
     // For subskill master data
 

@@ -32,15 +32,67 @@ const MutualSearchRegistration = () => {
     muzone: "",
     mudivision: "",
   });
+
   // State for form submission status
   const [submitted, setSubmitted] = useState(false);
-  const { zone_division, deptt, qualifications, desgs, gps, appmode } =
-    useGlobalContext(); // Fetching zone_division from global context
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isPFNoAvailable, setIsPFNoAvailable] = useState(true);
+  const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  // Update form data
-  const handleChange = (e) => {
+  const {
+    zone_division,
+    deptt,
+    qualifications,
+    desgs,
+    gps,
+    appmode,
+    community,
+  } = useGlobalContext();
+
+  const handleChange = async (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === "pfNo") {
+      setFormData({ ...formData, [name]: value });
+      await checkPFNoAvailability(value);
+    } else if (name === "hrmsId") {
+      setFormData({ ...formData, [name]: value.toUpperCase() });
+      await checkHRMSNoAvailability(value);
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const checkPFNoAvailability = async (pfNo) => {
+    try {
+      const response = await fetch(
+        `https://railwaymcq.com/sms/emp_formutual_validation.php?pf_no=${encodeURIComponent(
+          pfNo
+        )}&pfno_flag=true`
+      );
+      const result = await response.json();
+      setIsPFNoAvailable(result.isAvailable);
+      console.log("result", result);
+    } catch (error) {
+      console.error("Error checking PF NO availability:", error);
+      setIsPFNoAvailable(false);
+    }
+  };
+
+  const checkHRMSNoAvailability = async (hrmsId) => {
+    try {
+      const response = await fetch(
+        `https://railwaymcq.com/sms/emp_formutual_validation.php?hrms_id=${encodeURIComponent(
+          hrmsId
+        )}&hrms_flag=true`
+      );
+      const result = await response.json();
+      setIsHRMSNoAvailable(result.isAvailable);
+      console.log("result", result);
+    } catch (error) {
+      console.error("Error checking HRMS NO availability:", error);
+      setIsHRMSNoAvailable(false);
+    }
   };
 
   const insertData = async () => {
@@ -67,17 +119,28 @@ const MutualSearchRegistration = () => {
       alert("An error occurred while submitting the form. Please try again.");
     }
   };
-  // Handle form submission
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Check for empty required fields
-    const emptyFields = Object.keys(formData).filter((key) => !formData[key]);
-    if (emptyFields.length) {
+    setLoading(true);
+
+    await checkPFNoAvailability(formData.pfNo);
+    await checkHRMSNoAvailability(formData.hrmsId);
+
+    setLoading(false);
+    if (!isPFNoAvailable || !isHRMSNoAvailable) {
+      setResponseMessage(
+        "PF No or HRMS ID is already exists. Please choose another."
+      );
+      return;
+    }
+
+    if (Object.values(formData).some((field) => !field)) {
       alert("Please fill in all fields.");
       return;
     }
-    insertData();
-    setSubmitted(true);
+    setResponseMessage("");
+    await insertData();
   };
 
   return (
@@ -85,6 +148,9 @@ const MutualSearchRegistration = () => {
       <Container className="mt-4">
         <Card className="p-4 shadow-sm">
           <h2 className="text-center mb-4">Mutual Search Registration</h2>
+          {!submitted && responseMessage && (
+            <p className="text-danger text-center">{responseMessage}</p>
+          )}
           {submitted ? (
             <p className="text-success text-center">
               Thank you for registering. Your information has been submitted.
@@ -157,7 +223,7 @@ const MutualSearchRegistration = () => {
                       required
                     >
                       <option value="">Select Department</option>
-                      {console.log(deptt)}
+                      {/* {console.log(deptt)} */}
                       {deptt?.map((dept, index) => (
                         <option key={index} value={dept.dept_name}>
                           {dept.dept_name}
@@ -230,6 +296,30 @@ const MutualSearchRegistration = () => {
                     </Form.Control>
                   </Form.Group>
                 </Col>
+                <Col xs={12} sm={6} md={4} className="mb-3">
+                  <Form.Group controlId="payLevel">
+                    <Form.Label>
+                      <strong>Community</strong>
+                    </Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="community"
+                      value={formData.community}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select Community</option>
+                      {/* {console.log(community)} */}
+                      {community?.map((com, index) => (
+                        <option key={index} value={com.community}>
+                          {/* {console.log("community", com.community)} */}
+                          {com.community}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+                </Col>
+
                 {[
                   { label: "Station", name: "station" },
                   { label: "Office Name", name: "officeName" },
@@ -238,7 +328,7 @@ const MutualSearchRegistration = () => {
                   { label: "PF Number", name: "pfNo" },
                   { label: "Name", name: "name" },
                   { label: "Date of Birth", name: "dob", type: "date" },
-                  { label: "Community", name: "community" },
+                  // { label: "Community", name: "community" },
                   {
                     label: "Existing Medical Classification",
                     name: "medicalClassification",
@@ -292,6 +382,7 @@ const MutualSearchRegistration = () => {
                     </Form.Control>
                   </Form.Group>
                 </Col>
+
                 <Col xs={12} sm={6} md={4} className="mb-3">
                   <Form.Group controlId="payLevel">
                     <Form.Label>
