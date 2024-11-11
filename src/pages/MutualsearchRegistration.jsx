@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
@@ -6,9 +6,30 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useGlobalContext } from "../context/GlobalContext";
+import { UserContext } from "../context/UserContext";
 
 const MutualSearchRegistration = () => {
   // Form state
+
+  // State for form submission status
+  const [submitted, setSubmitted] = useState(false);
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isPFNoAvailable, setIsPFNoAvailable] = useState(true);
+  const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const {
+    zone_division,
+    deptt,
+    qualifications,
+    desgs,
+    gps,
+    appmode,
+    community,
+  } = useGlobalContext();
+
+  const { logoutUser, user, setUser } = useContext(UserContext);
+
   const [formData, setFormData] = useState({
     zone: "",
     division: "",
@@ -31,24 +52,9 @@ const MutualSearchRegistration = () => {
     modeofiniappoi: "",
     muzone: "",
     mudivision: "",
+    user: user.username,
   });
-
-  // State for form submission status
-  const [submitted, setSubmitted] = useState(false);
-  const [responseMessage, setResponseMessage] = useState("");
-  const [isPFNoAvailable, setIsPFNoAvailable] = useState(true);
-  const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
-  const [loading, setLoading] = useState(false);
-
-  const {
-    zone_division,
-    deptt,
-    qualifications,
-    desgs,
-    gps,
-    appmode,
-    community,
-  } = useGlobalContext();
+  // console.log("User::::", user.username);
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -123,7 +129,7 @@ const MutualSearchRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    console.log("formData", formData);
     await checkPFNoAvailability(formData.pfNo);
     await checkHRMSNoAvailability(formData.hrmsId);
 
@@ -134,7 +140,6 @@ const MutualSearchRegistration = () => {
       );
       return;
     }
-
     if (Object.values(formData).some((field) => !field)) {
       alert("Please fill in all fields.");
       return;
@@ -170,7 +175,7 @@ const MutualSearchRegistration = () => {
                       onChange={handleChange}
                       required
                     >
-                      <option value="">Select Zone</option>
+                      <option value={user.zone}>{user.zone}</option>
 
                       {zone_division?.map((zone, index) => (
                         <option key={index} value={Object.keys(zone)[0]}>
@@ -192,7 +197,7 @@ const MutualSearchRegistration = () => {
                       onChange={handleChange}
                       required
                     >
-                      <option value="">Select Division</option>
+                      <option value={user.division}>{user.division}</option>
                       {/* {console.log(formData)} */}
 
                       {zone_division?.map((zone, ind) => {
@@ -222,7 +227,7 @@ const MutualSearchRegistration = () => {
                       onChange={handleChange}
                       required
                     >
-                      <option value="">Select Department</option>
+                      <option value={user.deptt}>{user.deptt}</option>
                       {/* {console.log(deptt)} */}
                       {deptt?.map((dept, index) => (
                         <option key={index} value={dept.dept_name}>

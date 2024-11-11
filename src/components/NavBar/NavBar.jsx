@@ -10,6 +10,8 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Anni from "./Anni";
 import "../css/NavBar.css";
+import { FaUser } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 
 function NavBar() {
   const { logoutUser, user, setUser } = useContext(UserContext);
@@ -45,7 +47,9 @@ function NavBar() {
         >
           <Offcanvas.Body>
             <Nav className="flex-grow-1 pe-3">
-              <Nav.Link onClick={() => navigate("/")}>Home</Nav.Link>
+              <Nav.Link onClick={() => navigate("/")}>
+                <FaHome style={{ color: "blue" }} />
+              </Nav.Link>
               {user && (
                 <>
                   <NavDropdown title="Master Pages" id="master-pages-dropdown">
@@ -141,7 +145,11 @@ function NavBar() {
           </Offcanvas.Body>
         </Navbar.Offcanvas>
 
-        <Form className="d-flex ms-auto">
+        <Form className="d-flex ms-auto align-items-center">
+          <FaUser style={{ color: "blue", marginRight: "8px" }} />{" "}
+          {/* Adds margin to the right of the icon */}
+          <span className="me-2">{user ? user.name : "GUST"}</span>{" "}
+          {/* Adds margin to the right of the user name */}
           {user ? (
             <Button variant="outline-danger" onClick={handleLogoutClick}>
               Logout
@@ -152,6 +160,7 @@ function NavBar() {
             </Button>
           )}
         </Form>
+
         <Anni />
       </Container>
     </Navbar>
