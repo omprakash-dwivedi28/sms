@@ -31,6 +31,12 @@ const initialState = {
   gps: null,
   gp_error: false,
 
+  //for quata and levels master init
+
+  quata_loading: false,
+  quata: null,
+  quata_error: false,
+
   //for desg. and levels master init
 
   desg_loading: false,
@@ -133,6 +139,26 @@ export const GlobalProvider = ({ children }) => {
     } catch (error) {
       console.error("Error fetching QUALI_MASTER info:", error);
       dispatch({ type: "GET_QUALI_MASTER_INFO_ERROR" });
+    }
+  };
+
+  const fetchQuata = async () => {
+    // console.log("skill data");
+    const quata_flag = true;
+    dispatch({ type: "GET_QUATA_MASTER_INFO_BEGIN" });
+    try {
+      const response = await fetch(
+        `https://railwaymcq.com/sms/gp_level.php?quata_flag=${quata_flag}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      // console.log(data);
+      dispatch({ type: "GET_QUATA_MASTER_INFO_SUCCESS", payload: data });
+    } catch (error) {
+      console.error("Error fetching QUATA_MASTER info:", error);
+      dispatch({ type: "GET_QUATA_MASTER_INFO_ERROR" });
     }
   };
   const fetchCommunity = async () => {
@@ -259,6 +285,7 @@ export const GlobalProvider = ({ children }) => {
     fetchDeptt();
     fetchAppMode();
     fetchCommunity();
+    fetchQuata();
   }, []);
 
   return (
@@ -275,6 +302,7 @@ export const GlobalProvider = ({ children }) => {
         fetchDeptt,
         fetchAppMode,
         fetchCommunity,
+        fetchQuata,
       }}
     >
       {children}

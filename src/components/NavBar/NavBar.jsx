@@ -59,6 +59,9 @@ function NavBar() {
                     <NavDropdown.Item onClick={() => navigate("/EmpMaster")}>
                       Employee Master
                     </NavDropdown.Item>
+                    <NavDropdown.Item onClick={() => navigate("/BulkUpdatEmp")}>
+                      Bulk update Employee Depot Wise
+                    </NavDropdown.Item>
                     <NavDropdown.Item
                       onClick={() => navigate("/EditableEmpMaster")}
                     >

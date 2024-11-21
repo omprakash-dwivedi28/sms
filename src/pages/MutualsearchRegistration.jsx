@@ -26,16 +26,17 @@ const MutualSearchRegistration = () => {
     gps,
     appmode,
     community,
+    quata,
   } = useGlobalContext();
 
   const { logoutUser, user, setUser } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
-    zone: "",
-    division: "",
+    zone: user.zone,
+    division: user.division,
     station: "",
     officeName: "",
-    department: "",
+    department: user.department,
     subDepartment: "",
     hrmsId: "",
     name: "",
@@ -53,6 +54,8 @@ const MutualSearchRegistration = () => {
     muzone: "",
     mudivision: "",
     user: user.username,
+    mobno: "",
+    quata: "",
   });
   // console.log("User::::", user.username);
 
@@ -129,7 +132,18 @@ const MutualSearchRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log("formData", formData);
+
+    if (!/^[a-zA-Z0-9]{6}$/.test(formData.hrmsId)) {
+      alert("HRMS ID must be exactly 6 alphanumeric characters.");
+      setLoading(false);
+      return;
+    }
+    if (!/^\d{11}$/.test(formData.pfNo)) {
+      alert("PF Number must be exactly 11 digits.");
+      setLoading(false);
+      return;
+    }
+    // console.log("formData", formData);
     await checkPFNoAvailability(formData.pfNo);
     await checkHRMSNoAvailability(formData.hrmsId);
 
@@ -324,6 +338,28 @@ const MutualSearchRegistration = () => {
                     </Form.Control>
                   </Form.Group>
                 </Col>
+                <Col xs={12} sm={6} md={4} className="mb-3">
+                  <Form.Group controlId="payLevel">
+                    <Form.Label>
+                      <strong>Quata</strong>
+                    </Form.Label>
+                    <Form.Control
+                      as="select"
+                      name="quata"
+                      value={formData.quata}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select Quata</option>
+                      {/* {console.log(community)} */}
+                      {quata?.map((quata, index) => (
+                        <option key={index} value={quata.Quata}>
+                          {quata.Quata}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+                </Col>
 
                 {[
                   { label: "Station", name: "station" },
@@ -332,6 +368,7 @@ const MutualSearchRegistration = () => {
                   { label: "HRMS ID", name: "hrmsId" },
                   { label: "PF Number", name: "pfNo" },
                   { label: "Name", name: "name" },
+                  { label: "Mobile No", name: "mobno" },
                   { label: "Date of Birth", name: "dob", type: "date" },
                   // { label: "Community", name: "community" },
                   {

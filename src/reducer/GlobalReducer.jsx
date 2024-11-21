@@ -102,6 +102,27 @@ const GlobalReducer = (state, action) => {
         gp_error: true,
       };
 
+    // For Quata DR/CR and level data
+
+    case "GET_QUATA_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        quata_loding: true,
+      };
+
+    case "GET_QUATA_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        quata_loding: false,
+        quata: action.payload,
+      };
+    case "GET_QUATA_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        quata_loding: false,
+        quata_error: true,
+      };
+
     // For Desg. and level data
 
     case "GET_DESG_MASTER_INFO_BEGIN":

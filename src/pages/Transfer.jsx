@@ -27,10 +27,6 @@ function Transfer() {
   const [combinedEmployees, setCombinedEmployees] = useState([]);
   const [combinedChartData, setCombinedChartData] = useState([]);
 
-  // const [chartData, setChartData] = useState([
-  //   ["Designation", "From Count", "To Count"],
-  // ]);
-
   const [chartData, setChartData] = useState([]);
   const [selectedMetric, setSelectedMetric] = useState("Vacancy"); // Default selection
   const [fromDepotName, setFromDepotName] = useState({});
@@ -63,8 +59,6 @@ function Transfer() {
           setFromDepotEmployees(data.employee_data || []);
           setFromDepotData(data.depot_data || {});
           setFromPostWiseData(data.post_wise_data || []);
-          // setFromDepotName(data.depot);
-          // console.log("fromDepotEmployees" + fromDepotEmployees);
         })
         .catch((error) => {
           console.error("Error fetching employees and depot data:", error);
@@ -294,12 +288,12 @@ function Transfer() {
     const combinedData = [
       [
         "Designation",
-        "SS",
-        "MOR",
-        "Vacancy (SS - MOR)",
-        "SS (To)",
-        "MOR (To)",
-        "Vacancy (To)",
+        `${fromDepotEmployees[0]?.depot_name}-SS`,
+        `${fromDepotEmployees[0]?.depot_name}-MOR`,
+        `${fromDepotEmployees[0]?.depot_name}-Vacancy`,
+        `${toDepotEmployees[0]?.depot_name}-SS`,
+        `${toDepotEmployees[0]?.depot_name}-MOR`,
+        `${fromDepotEmployees[0]?.depot_name}-Vacancy`,
       ],
     ];
 
@@ -358,86 +352,270 @@ function Transfer() {
   }, [fromPostWiseData, toPostWiseData, selectedMetric]);
 
   return (
-    <Container>
+    <div>
+      <div className="containerr">
+        <div className="row">
+          <div className=" col-md-4 col-12">
+            <Card bg="light" className="custom-card">
+              <Card.Header className="custom-card-header">
+                Transfer from Depot
+              </Card.Header>
+              <Card.Body>
+                <Form>
+                  <InputGroup className="mb-3">
+                    <Form.Select
+                      value={selectedFromDepot}
+                      onChange={handleFromDepotChange}
+                    >
+                      <option value="">Select Depot</option>
+                      {depots?.map((depot) => (
+                        <option key={depot.depo_id} value={depot.depo_id}>
+                          {depot.depot_name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </InputGroup>
+                  <h6>Employees</h6>
+                  <div className="scrollable">
+                    <Form>
+                      <Table striped bordered hover>
+                        <thead>
+                          <tr>
+                            <th>Select</th>
+                            <th>Sr.No</th>
+                            <th>Name</th>
+                            <th>Post</th>
+                            <th>Rating</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {fromDepotEmployees.map((employee) => (
+                            <tr key={employee.emp_id}>
+                              <td>
+                                <Form.Check
+                                  type="checkbox"
+                                  onChange={(e) =>
+                                    handleEmployeeSelection(e, employee)
+                                  }
+                                />
+                              </td>
+                              <td>{employee.sr_no}</td>
+                              <td>{employee.emp_name}</td>
+                              <td>{employee.post}</td>
+                              <td>{employee.rating}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </Form>
+                  </div>
+                </Form>
+              </Card.Body>
+            </Card>
+          </div>
+          <div className=" col-md-4 col-12">
+            <h5>Select diffrent type data option</h5>
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                {selectedMetric}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleMetricChange("Vacancy")}>
+                  Vacancy
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleMetricChange("MOR")}>
+                  MOR
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleMetricChange("SS")}>
+                  SS
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>{" "}
+            <Card className="mt-4">
+              <Card.Header className="custom-card-header">
+                Designation Wise Staff {selectedMetric} graph
+              </Card.Header>
+              {console.log(chartData)}
+              <Card.Body>
+                <Chart
+                  chartType="Bar"
+                  width="100%"
+                  height="400px"
+                  data={chartData} // Use your dynamic chartData here
+                  options={{
+                    title: "Designation Wise Staff Count Comparison",
+                    chartArea: { width: "70%" }, // Adjusted to give more space for annotations
+                    hAxis: {
+                      title: "Count",
+                      minValue: 0,
+                      role: "style",
+                    },
+                    vAxis: {
+                      title: "Designation",
+                    },
+                    legend: { position: "bottom" },
+                    bars: "horizontal", // Horizontal bars
+                    annotations: {
+                      textStyle: {
+                        fontSize: 12,
+                        color: "#000000", // Change color for better visibility
+                        auraColor: "none",
+                      },
+                    },
+                    bar: { groupWidth: "75%" }, // Adjust the width of the bars
+                  }}
+                />
+              </Card.Body>
+            </Card>
+            <Card className="mt-4">
+              <Card.Header className="custom-card-header">
+                Designation Wise Staff Combined Metric Graph
+              </Card.Header>
+              <Card.Body>
+                <Chart
+                  chartType="Bar"
+                  width="100%"
+                  height="400px"
+                  data={combinedChartData} // Use the combinedChartData here
+                  options={{
+                    title: "Designation Wise Staff Combined Metric Comparison",
+                    chartArea: { width: "70%" },
+                    hAxis: {
+                      title: "Count",
+                      minValue: 0,
+                      role: "style",
+                    },
+                    vAxis: {
+                      title: "Designation",
+                    },
+                    legend: { position: "bottom" },
+                    bars: "horizontal",
+                    annotations: {
+                      textStyle: {
+                        fontSize: 12,
+                        color: "#000000",
+                        auraColor: "none",
+                      },
+                    },
+                    bar: { groupWidth: "75%" },
+                  }}
+                />
+              </Card.Body>
+            </Card>
+            <Card>
+              <Button
+                onClick={handleTransfer}
+                disabled={!selectedEmployees.length}
+                variant="primary"
+                className="w-100"
+              >
+                Transfer →
+              </Button>{" "}
+            </Card>
+          </div>
+          <div className=" col-md-4 col-12">
+            <Card bg="light" className="custom-card">
+              <Card.Header className="custom-card-header">
+                Transfer to Depot
+              </Card.Header>
+              <Card.Body>
+                <Form>
+                  <InputGroup className="mb-3">
+                    <Form.Select
+                      aria-label="Select To Depot"
+                      value={selectedToDepot}
+                      onChange={handleToDepotChange}
+                    >
+                      <option value="">Select Depot</option>
+                      {depots?.map((depot) => (
+                        <option key={depot.depo_id} value={depot.depo_id}>
+                          {depot.depot_name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </InputGroup>
+                  <h6>Employees</h6>
+                  <div className="scrollable">
+                    <Form>
+                      <Form>
+                        <Table striped bordered hover>
+                          <thead>
+                            <tr>
+                              <th>Sr.No</th>
+                              <th>Name</th>
+                              <th>Post</th>
+                              <th>Rating</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {toDepotEmployees.map((employee) => (
+                              <tr key={employee.emp_id}>
+                                <td>{employee.sr_no}</td>
+                                <td>{employee.emp_name}</td>
+                                <td>{employee.post}</td>
+                                <td>{employee.rating}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </Form>
+                    </Form>
+                  </div>
+                  <h6 className="mt-4">Transferred Employees</h6>
+                  <ListGroup>
+                    <Table striped bordered hover className="custom-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Post</th>
+                          <th>PF NO</th>
+                          <th>Rating</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {transferredEmployees.map((employee) => (
+                          <tr key={employee.emp_id}>
+                            <td>{employee.emp_name}</td>
+                            <td>{employee.post}</td>
+                            <td>{employee.pf_no}</td>
+                            <td>{employee.rating}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </ListGroup>
+                </Form>
+              </Card.Body>
+            </Card>
+          </div>
+        </div>
+      </div>
+      {/* <div className="containerr" > */}
+      {/* <div className="row" >
+          <div
+            className=" col-md-4 col-12"
+            
+          >
+            1 of 3
+          </div>
+          <div
+            className=" col-md-4 col-12"
+            
+          >
+            Variable width content
+          </div>
+          <div
+            className=" col-md-4 col-12"
+            
+          >
+            3 of 3
+          </div>
+        </div>
+      </div> */}
+
       <Row className="mb-4">
         <Col md={4}>
-          <Card bg="light" className="custom-card">
-            <Card.Header className="custom-card-header">
-              Transfer from Depot
-            </Card.Header>
-            <Card.Body>
-              <Form>
-                <InputGroup className="mb-3">
-                  {/* <Form.Select
-                    aria-label="Select From Depot"
-                    value={selectedFromDepot}
-                    onChange={handleFromDepotChange}
-                  >
-                    <option value="">Select Depot</option>
-                    {depots?.map((depot) => (
-                      // <option key={depot.depo_id} value={depot.depo_id}>
-                      //   {depot.depot_name}
-                      <option
-                        key={depot.depo_id}
-                        value={`${depot.depo_id}-${depot.depot_name}`}
-                      >
-                        {depot.depot_name}
-                      </option>
-                    ))}
-                  </Form.Select> */}
-
-                  <Form.Select
-                    value={selectedFromDepot}
-                    onChange={handleFromDepotChange}
-                  >
-                    <option value="">Select Depot</option>
-                    {depots?.map((depot) => (
-                      <option key={depot.depo_id} value={depot.depo_id}>
-                        {depot.depot_name}
-                      </option>
-                    ))}
-                  </Form.Select>
-
-                  {/* Display the selected depot name */}
-                  {/* {selectedFromDepot && (
-                    <p>Selected Depot Name: {fromDepotName}</p>
-                  )} */}
-                </InputGroup>
-                <h6>Employees</h6>
-                <Form>
-                  <Table striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Select</th>
-                        <th>Sr.No</th>
-                        <th>Name</th>
-                        <th>Post</th>
-                        <th>Rating</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {fromDepotEmployees.map((employee) => (
-                        <tr key={employee.emp_id}>
-                          <td>
-                            <Form.Check
-                              type="checkbox"
-                              onChange={(e) =>
-                                handleEmployeeSelection(e, employee)
-                              }
-                            />
-                          </td>
-                          <td>{employee.sr_no}</td>
-                          <td>{employee.emp_name}</td>
-                          <td>{employee.post}</td>
-                          <td>{employee.rating}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </Form>
-              </Form>
-            </Card.Body>
-          </Card>
           <Card className="mt-4 custom-card">
             <Card.Header className="custom-card-header">
               Before Transfer
@@ -539,246 +717,9 @@ function Transfer() {
             </Card.Body>
           </Card>
         </Col>
-
-        {/* <Col md={4}>
-          <h5>Select different type data option</h5>
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-              {selectedMetric}
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleMetricChange("Vacancy")}>
-                Vacancy
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleMetricChange("MOR")}>
-                MOR
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleMetricChange("SS")}>
-                SS
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleMetricChange("Combined")}>
-                Combined
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-          <Card className="mt-4">
-            <Card.Header className="custom-card-header">
-              Designation Wise Staff Vacancy graph
-            </Card.Header>
-            {console.log(chartData)}
-            <Card.Body>
-              <Chart
-                chartType="Bar"
-                width="100%"
-                height="400px"
-                data={chartData} // Use your dynamic chartData here
-                options={{
-                  title: "Designation Wise Staff Count Comparison",
-                  chartArea: { width: "70%" },
-                  hAxis: {
-                    title: "Count",
-                    minValue: 0,
-                    role: "style",
-                  },
-                  vAxis: {
-                    title: "Designation",
-                  },
-                  legend: { position: "bottom" },
-                  bars: "horizontal",
-                  annotations: {
-                    textStyle: {
-                      fontSize: 12,
-                      color: "#000000",
-                      auraColor: "none",
-                    },
-                  },
-                  bar: { groupWidth: "75%" },
-                }}
-              />
-            </Card.Body>
-          </Card> */}
-
-        <Col
-          md={4}
-          // className="d-flex align-items-center justify-content-center"
-        >
-          <h5>Select diffrent type data option</h5>
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-              {selectedMetric}
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleMetricChange("Vacancy")}>
-                Vacancy
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleMetricChange("MOR")}>
-                MOR
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleMetricChange("SS")}>
-                SS
-              </Dropdown.Item>
-              {/* <Dropdown.Item onClick={() => handleMetricChange("Combined")}>
-                Combined
-              </Dropdown.Item> */}
-            </Dropdown.Menu>
-          </Dropdown>{" "}
-          <Card className="mt-4">
-            <Card.Header className="custom-card-header">
-              Designation Wise Staff Vacancy graph
-            </Card.Header>
-            {console.log(chartData)}
-            <Card.Body>
-              <Chart
-                chartType="Bar"
-                width="100%"
-                height="400px"
-                data={chartData} // Use your dynamic chartData here
-                options={{
-                  title: "Designation Wise Staff Count Comparison",
-                  chartArea: { width: "70%" }, // Adjusted to give more space for annotations
-                  hAxis: {
-                    title: "Count",
-                    minValue: 0,
-                    role: "style",
-                  },
-                  vAxis: {
-                    title: "Designation",
-                  },
-                  legend: { position: "bottom" },
-                  bars: "horizontal", // Horizontal bars
-                  annotations: {
-                    textStyle: {
-                      fontSize: 12,
-                      color: "#000000", // Change color for better visibility
-                      auraColor: "none",
-                    },
-                  },
-                  bar: { groupWidth: "75%" }, // Adjust the width of the bars
-                }}
-              />
-            </Card.Body>
-          </Card>
-          <Card className="mt-4">
-            <Card.Header className="custom-card-header">
-              Designation Wise Staff Combined Metric Graph
-            </Card.Header>
-            <Card.Body>
-              <Chart
-                chartType="Bar"
-                width="100%"
-                height="400px"
-                data={combinedChartData} // Use the combinedChartData here
-                options={{
-                  title: "Designation Wise Staff Combined Metric Comparison",
-                  chartArea: { width: "70%" },
-                  hAxis: {
-                    title: "Count",
-                    minValue: 0,
-                    role: "style",
-                  },
-                  vAxis: {
-                    title: "Designation",
-                  },
-                  legend: { position: "bottom" },
-                  bars: "horizontal",
-                  annotations: {
-                    textStyle: {
-                      fontSize: 12,
-                      color: "#000000",
-                      auraColor: "none",
-                    },
-                  },
-                  bar: { groupWidth: "75%" },
-                }}
-              />
-            </Card.Body>
-          </Card>
-          <Card>
-            <Button
-              onClick={handleTransfer}
-              disabled={!selectedEmployees.length}
-              variant="primary"
-              className="w-100"
-            >
-              Transfer →
-            </Button>{" "}
-          </Card>
-        </Col>
+        <Col md={4}></Col>
 
         <Col md={4}>
-          <Card bg="light" className="custom-card">
-            <Card.Header className="custom-card-header">
-              Transfer to Depot
-            </Card.Header>
-            <Card.Body>
-              <Form>
-                <InputGroup className="mb-3">
-                  <Form.Select
-                    aria-label="Select To Depot"
-                    value={selectedToDepot}
-                    onChange={handleToDepotChange}
-                  >
-                    <option value="">Select Depot</option>
-                    {depots?.map((depot) => (
-                      <option key={depot.depo_id} value={depot.depo_id}>
-                        {depot.depot_name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </InputGroup>
-                <h6>Employees</h6>
-                <Form>
-                  <Form>
-                    <Table striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th>Sr.No</th>
-                          <th>Name</th>
-                          <th>Post</th>
-                          <th>Rating</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {toDepotEmployees.map((employee) => (
-                          <tr key={employee.emp_id}>
-                            <td>{employee.sr_no}</td>
-                            <td>{employee.emp_name}</td>
-                            <td>{employee.post}</td>
-                            <td>{employee.rating}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Form>
-                </Form>
-                <h6 className="mt-4">Transferred Employees</h6>
-                <ListGroup>
-                  <Table striped bordered hover className="custom-table">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Post</th>
-                        <th>PF NO</th>
-                        <th>Rating</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transferredEmployees.map((employee) => (
-                        <tr key={employee.emp_id}>
-                          <td>{employee.emp_name}</td>
-                          <td>{employee.post}</td>
-                          <td>{employee.pf_no}</td>
-                          <td>{employee.rating}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </ListGroup>
-              </Form>
-            </Card.Body>
-          </Card>
           <Card bg="light" className="custom-card">
             <Card.Header className="custom-card-header">
               Before Transfer
@@ -879,7 +820,7 @@ function Transfer() {
           </Card>
         </Col>
       </Row>
-    </Container>
+    </div>
   );
 }
 

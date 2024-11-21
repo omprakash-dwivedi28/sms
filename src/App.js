@@ -18,6 +18,8 @@ import EmpAnalytics from "./pages/EmpAnalytics";
 
 import MutualTransferSearch from "./pages/MutualTransferSearch ";
 import MutualsearchRegistration from "./pages/MutualsearchRegistration";
+import BulkUpdatEmp from "./pages/BulkUpdatEmp";
+
 import LogIn from "./pages/LogIn";
 
 function App() {
@@ -55,6 +57,7 @@ function App() {
             path="/MutualsearchRegistration"
             element={<MutualsearchRegistration />}
           />
+          <Route path="/BulkUpdatEmp" element={<BulkUpdatEmp />} />
           <Route path="/LogIn" element={<LogIn />} />
         </Routes>
       </Router>

@@ -28,3 +28,9 @@
   font-size: 1rem;
   padding: 12px;
 }
+.scrollable {
+  max-height: 950px; /* Set the maximum height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border: 1px solid #ddd; /* Optional: Add a border for better visibility */
+  padding: 10px; /* Optional: Add padding for better layout */
+}
