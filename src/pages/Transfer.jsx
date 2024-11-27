@@ -21,6 +21,9 @@ function Transfer() {
   const [fromDepotData, setFromDepotData] = useState({});
   const [toDepotEmployees, setToDepotEmployees] = useState([]);
   const [toPostWiseData, setToPostWiseData] = useState([]);
+  const [toEmpWiseMOR, setToEmpWiseMOR] = useState([]);
+  const [fromEmpWiseMOR, setFromEmpWiseMOR] = useState([]);
+
   const [toDepotData, setToDepotData] = useState({});
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [transferredEmployees, setTransferredEmployees] = useState([]);
@@ -59,6 +62,7 @@ function Transfer() {
           setFromDepotEmployees(data.employee_data || []);
           setFromDepotData(data.depot_data || {});
           setFromPostWiseData(data.post_wise_data || []);
+          setFromEmpWiseMOR(data.emp_wise_mor_data || []);
         })
         .catch((error) => {
           console.error("Error fetching employees and depot data:", error);
@@ -76,6 +80,7 @@ function Transfer() {
           setToDepotEmployees(data.employee_data || []);
           setToDepotData(data.depot_data || {});
           setToPostWiseData(data.post_wise_data || []);
+          setToEmpWiseMOR(data.emp_wise_mor_data || []);
         })
         .catch((error) => {
           console.error("Error fetching employees and depot data:", error);
@@ -399,10 +404,55 @@ function Transfer() {
                                   }
                                 />
                               </td>
-                              <td>{employee.sr_no}</td>
-                              <td>{employee.emp_name}</td>
-                              <td>{employee.post}</td>
-                              <td>{employee.rating}</td>
+                              <td
+                                key={employee.emp_id}
+                                style={{
+                                  backgroundColor:
+                                    employee.level == 0
+                                      ? "#F47373"
+                                      : "transparent",
+                                }}
+                                // style={{
+                                //   color: employee.level == 0 ? "blue" : "black", // High rating in green
+                                //   fontWeight:
+                                //     employee.level == 0 ? "bold" : "normal", // Bold for emphasis
+                                // }}
+                              >
+                                {employee.sr_no}
+                              </td>
+                              <td
+                                key={employee.emp_id}
+                                style={{
+                                  backgroundColor:
+                                    employee.level == 0
+                                      ? "#F47373"
+                                      : "transparent",
+                                }}
+                              >
+                                {employee.emp_name}
+                              </td>
+                              <td
+                                key={employee.emp_id}
+                                style={{
+                                  backgroundColor:
+                                    employee.level == 0
+                                      ? "#F47373"
+                                      : "transparent",
+                                }}
+                              >
+                                {employee.post}
+                              </td>
+                              <td
+                                key={employee.emp_id}
+                                style={{
+                                  backgroundColor:
+                                    employee.level == 0
+                                      ? "#F47373"
+                                      : "transparent",
+                                }}
+                              >
+                                {employee.rating}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -550,11 +600,47 @@ function Transfer() {
                           </thead>
                           <tbody>
                             {toDepotEmployees.map((employee) => (
-                              <tr key={employee.emp_id}>
-                                <td>{employee.sr_no}</td>
-                                <td>{employee.emp_name}</td>
-                                <td>{employee.post}</td>
-                                <td>{employee.rating}</td>
+                              <tr>
+                                <td
+                                  style={{
+                                    backgroundColor:
+                                      employee.level == 0
+                                        ? "#F47373"
+                                        : "transparent",
+                                  }}
+                                >
+                                  {employee.sr_no}
+                                </td>
+                                <td
+                                  style={{
+                                    backgroundColor:
+                                      employee.level == 0
+                                        ? "#F47373"
+                                        : "transparent",
+                                  }}
+                                >
+                                  {employee.emp_name}
+                                </td>
+                                <td
+                                  style={{
+                                    backgroundColor:
+                                      employee.level == 0
+                                        ? "#F47373"
+                                        : "transparent",
+                                  }}
+                                >
+                                  {employee.post}
+                                </td>
+                                <td
+                                  style={{
+                                    backgroundColor:
+                                      employee.level == 0
+                                        ? "#F47373"
+                                        : "transparent",
+                                  }}
+                                >
+                                  {employee.rating}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -591,29 +677,6 @@ function Transfer() {
           </div>
         </div>
       </div>
-      {/* <div className="containerr" > */}
-      {/* <div className="row" >
-          <div
-            className=" col-md-4 col-12"
-            
-          >
-            1 of 3
-          </div>
-          <div
-            className=" col-md-4 col-12"
-            
-          >
-            Variable width content
-          </div>
-          <div
-            className=" col-md-4 col-12"
-            
-          >
-            3 of 3
-          </div>
-        </div>
-      </div> */}
-
       <Row className="mb-4">
         <Col md={4}>
           <Card className="mt-4 custom-card">
@@ -676,16 +739,35 @@ function Transfer() {
                     </tr>
                   </thead>
                   <tbody>
-                    {fromPostWiseData.map((post, index) => (
-                      <tr key={index}>
-                        <td>
-                          <strong>{post.desg_name}</strong>
-                        </td>
-                        <td>{post.ss}</td>
-                        <td>{post.mor}</td>
-                        <td>{Number(post.ss) - Number(post.mor)}</td>
-                      </tr>
-                    ))}
+                    {console.log("fromEmpWiseMOR:-", fromEmpWiseMOR)}
+                    {fromPostWiseData.map((post, index) => {
+                      // Find the matching entry in fromEmpWiseMOR
+                      const empData = fromEmpWiseMOR.find(
+                        (emp) => emp.desg_name === post.desg_name
+                      );
+
+                      // Extract the post_count or set it to 0 if not found
+                      const postCount = empData
+                        ? Number(empData.post_count)
+                        : 0;
+
+                      // Check if there is a mismatch
+                      const isMismatch = postCount !== Number(post.mor);
+
+                      return (
+                        <tr key={index}>
+                          <td>
+                            <strong>{post.desg_name}</strong>
+                          </td>
+                          <td>{post.ss}</td>
+                          {/* Apply red color if there is a mismatch */}
+                          <td style={{ color: isMismatch ? "red" : "inherit" }}>
+                            {post.mor}
+                          </td>
+                          <td>{Number(post.ss) - Number(post.mor)}</td>
+                        </tr>
+                      );
+                    })}
                     {/* Total Calculation Row */}
                     <tr className="font-weight-bold">
                       <td className="text-secondary mb-3">
@@ -779,16 +861,36 @@ function Transfer() {
                     </tr>
                   </thead>
                   <tbody>
-                    {toPostWiseData.map((post, index) => (
-                      <tr key={index}>
-                        <td>
-                          <strong>{post.desg_name}</strong>
-                        </td>
-                        <td>{post.ss}</td>
-                        <td>{post.mor}</td>
-                        <td>{Number(post.ss) - Number(post.mor)}</td>
-                      </tr>
-                    ))}
+                    {console.log("toEmpWiseMOR:-", toEmpWiseMOR)}
+                    {toPostWiseData.map((post, index) => {
+                      // Find the matching entry in toEmpWiseMOR
+                      const empData = toEmpWiseMOR.find(
+                        (emp) => emp.desg_name === post.desg_name
+                      );
+
+                      // Extract the post_count or set it to 0 if not found
+                      const postCount = empData
+                        ? Number(empData.post_count)
+                        : 0;
+
+                      // Check if there is a mismatch
+                      const isMismatch = postCount !== Number(post.mor);
+
+                      return (
+                        <tr key={index}>
+                          <td>
+                            <strong>{post.desg_name}</strong>
+                          </td>
+                          <td>{post.ss}</td>
+                          {/* Apply red color if there is a mismatch */}
+                          <td style={{ color: isMismatch ? "red" : "inherit" }}>
+                            {post.mor}
+                          </td>
+                          <td>{Number(post.ss) - Number(post.mor)}</td>
+                        </tr>
+                      );
+                    })}
+                    {/* Total Calculation Row */}
                     <tr className="font-weight-bold">
                       <td className="text-secondary mb-3">
                         <strong>Total</strong>

@@ -34,3 +34,14 @@
   border: 1px solid #ddd; /* Optional: Add a border for better visibility */
   padding: 10px; /* Optional: Add padding for better layout */
 }
+tr.high-rating {
+  background-color: #d4edda !important;
+}
+.high-rating {
+  color: green;
+  font-weight: bold;
+}
+
+.low-rating {
+  color: red;
+}

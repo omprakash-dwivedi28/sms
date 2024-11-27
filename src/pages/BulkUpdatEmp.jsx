@@ -118,9 +118,9 @@ const BulkUpdatEmp = () => {
               <tr>
                 <th>Sr. No.</th>
                 <th>emp_id</th>
-                <th>depot_id</th>
                 <th>depot_name</th>
                 <th>emp_name</th>
+                <th>post</th>
                 <th>mobile_no</th>
                 <th>email_id</th>
                 <th>pf_no</th>
@@ -129,16 +129,13 @@ const BulkUpdatEmp = () => {
                 <th>dob</th>
                 <th>doa</th>
                 <th>dor</th>
-                <th>post</th>
+
                 <th>rating</th>
                 <th>level</th>
                 <th>exp</th>
                 <th>education</th>
                 <th>otherEducation</th>
                 <th>achivment</th>
-                <th>depot_joining_date</th>
-                <th>tr_flag</th>
-                <th>tr_date</th>
               </tr>
             </thead>
             <tbody>
@@ -147,13 +144,15 @@ const BulkUpdatEmp = () => {
                   <td>{index + 1}</td>
                   {Object.keys(employee).map((key) => (
                     <td key={key} className="text-nowrap">
-                      {key === "emp_id" ||
-                      key === "depot_id" ||
-                      key === "depot_name" ? (
+                      {key === "emp_id" ? (
                         employee[key]
                       ) : (
                         <input
-                          type="text"
+                          type={
+                            key === "dob" || key === "doa" || key === "dor"
+                              ? "date" // Use date input for dob, doa, dor
+                              : "text" // Use text input for other fields
+                          }
                           className="form-control form-control-sm w-auto"
                           value={employee[key] || ""}
                           onChange={(e) =>
