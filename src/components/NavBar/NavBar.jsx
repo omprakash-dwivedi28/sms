@@ -85,6 +85,11 @@ function NavBar() {
                       Employee Transfer
                     </NavDropdown.Item>
                     <NavDropdown.Item
+                      onClick={() => navigate("/SearchStaffPosition")}
+                    >
+                      Search New Staff Position
+                    </NavDropdown.Item>
+                    <NavDropdown.Item
                       onClick={() => navigate("/PostEmployeeModification")}
                     >
                       Employee Joining Formalities

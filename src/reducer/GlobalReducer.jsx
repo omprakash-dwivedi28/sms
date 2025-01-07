@@ -143,6 +143,27 @@ const GlobalReducer = (state, action) => {
         desg_loding: false,
         desg_error: true,
       };
+
+    //FOR Section wise Depot
+
+    case "GET_SECTION_MASTER_INFO_BEGIN":
+      return {
+        ...state,
+        section_loding: true,
+      };
+
+    case "GET_SECTION_MASTER_INFO_SUCCESS":
+      return {
+        ...state,
+        section_loding: false,
+        sections: action.payload,
+      };
+    case "GET_SECTION_MASTER_INFO_ERROR":
+      return {
+        ...state,
+        section_loding: false,
+        section_error: true,
+      };
     //For Zone Divesion featching
     case "GET_ZONE_DIVISION_MASTER_INFO_BEGIN":
       return {

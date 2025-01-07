@@ -58,6 +58,10 @@ const initialState = {
   community_loading: false,
   community: null,
   community_error: false,
+
+  section_loading: false,
+  sections: null,
+  section_error: false,
 };
 
 const GlobalContext = createContext();
@@ -159,6 +163,26 @@ export const GlobalProvider = ({ children }) => {
     } catch (error) {
       console.error("Error fetching QUATA_MASTER info:", error);
       dispatch({ type: "GET_QUATA_MASTER_INFO_ERROR" });
+    }
+  };
+
+  const fetchSection = async () => {
+    // console.log("skill data");
+    const section_flag = true;
+    dispatch({ type: "GET_SECTION_MASTER_INFO_BEGIN" });
+    try {
+      const response = await fetch(
+        `https://railwaymcq.com/sms/gp_level.php?section_flag=${section_flag}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      // console.log(data);
+      dispatch({ type: "GET_SECTION_MASTER_INFO_SUCCESS", payload: data });
+    } catch (error) {
+      console.error("Error fetching SECTION_MASTER info:", error);
+      dispatch({ type: "GET_SECTION_MASTER_INFO_ERROR" });
     }
   };
   const fetchCommunity = async () => {
@@ -286,6 +310,7 @@ export const GlobalProvider = ({ children }) => {
     fetchAppMode();
     fetchCommunity();
     fetchQuata();
+    fetchSection();
   }, []);
 
   return (
@@ -303,6 +328,7 @@ export const GlobalProvider = ({ children }) => {
         fetchAppMode,
         fetchCommunity,
         fetchQuata,
+        fetchSection,
       }}
     >
       {children}

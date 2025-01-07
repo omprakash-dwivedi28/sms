@@ -24,6 +24,9 @@ function Transfer() {
   const [toEmpWiseMOR, setToEmpWiseMOR] = useState([]);
   const [fromEmpWiseMOR, setFromEmpWiseMOR] = useState([]);
 
+  const [toCategoryWiseData, setToCategoryWiseData] = useState([]);
+  const [fromCategoryWiseData, setFromCategoryWiseData] = useState([]);
+
   const [toDepotData, setToDepotData] = useState({});
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [transferredEmployees, setTransferredEmployees] = useState([]);
@@ -63,6 +66,7 @@ function Transfer() {
           setFromDepotData(data.depot_data || {});
           setFromPostWiseData(data.post_wise_data || []);
           setFromEmpWiseMOR(data.emp_wise_mor_data || []);
+          setFromCategoryWiseData(data.category_wise_data || []);
         })
         .catch((error) => {
           console.error("Error fetching employees and depot data:", error);
@@ -81,6 +85,7 @@ function Transfer() {
           setToDepotData(data.depot_data || {});
           setToPostWiseData(data.post_wise_data || []);
           setToEmpWiseMOR(data.emp_wise_mor_data || []);
+          setToCategoryWiseData(data.category_wise_data || []);
         })
         .catch((error) => {
           console.error("Error fetching employees and depot data:", error);
@@ -259,16 +264,7 @@ function Transfer() {
       toDataMap.set(designation, count);
     });
 
-    // Combine both datasets with annotations
-    const combinedData = [
-      [
-        "Designation",
-        fromDepotName,
-        // { role: "annotation" },
-        toDepotshowName,
-        // { role: "annotation" },
-      ],
-    ];
+    const combinedData = [["Designation", fromDepotName, toDepotshowName]];
 
     const allDesignations = new Set([
       ...fromDataMap.keys(),
@@ -278,13 +274,7 @@ function Transfer() {
     allDesignations.forEach((desg) => {
       const fromCount = fromDataMap.get(desg) || 0;
       const toCount = toDataMap.get(desg) || 0;
-      combinedData.push([
-        desg,
-        fromCount, // Actual count for From Depot
-        // fromCount.toString(), // Ensure the annotation is a string
-        toCount, // Actual count for To Depot
-        // toCount.toString(), // Ensure the annotation is a string
-      ]);
+      combinedData.push([desg, fromCount, toCount]);
     });
 
     setChartData(combinedData);
@@ -412,11 +402,6 @@ function Transfer() {
                                       ? "#F47373"
                                       : "transparent",
                                 }}
-                                // style={{
-                                //   color: employee.level == 0 ? "blue" : "black", // High rating in green
-                                //   fontWeight:
-                                //     employee.level == 0 ? "bold" : "normal", // Bold for emphasis
-                                // }}
                               >
                                 {employee.sr_no}
                               </td>
@@ -461,6 +446,25 @@ function Transfer() {
                   </div>
                 </Form>
               </Card.Body>
+              <h6 className="mt-4">Category Wise MOR</h6>
+              <ListGroup>
+                <Table striped bordered hover className="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>MOR</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fromCategoryWiseData.map((employee) => (
+                      <tr key={employee.category}>
+                        <td>{employee.category}</td>
+                        <td>{employee.post_count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </ListGroup>
             </Card>
           </div>
           <div className=" col-md-4 col-12">
@@ -648,6 +652,26 @@ function Transfer() {
                       </Form>
                     </Form>
                   </div>
+                  <h6 className="mt-4">Category Wise MOR</h6>
+                  <ListGroup>
+                    <Table striped bordered hover className="custom-table">
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>MOR</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {toCategoryWiseData.map((employee) => (
+                          <tr key={employee.category}>
+                            <td>{employee.category}</td>
+                            <td>{employee.post_count}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </ListGroup>
+
                   <h6 className="mt-4">Transferred Employees</h6>
                   <ListGroup>
                     <Table striped bordered hover className="custom-table">
@@ -717,7 +741,7 @@ function Transfer() {
               </h6>
               <h6 className="mt-4 custom-card">
                 {" "}
-                Depot. staff:{" "}
+                MOR:{" "}
                 {Number(fromDepotData.staff_avail) -
                   Number(fromselectedCurrentStaff)}
               </h6>
@@ -839,7 +863,7 @@ function Transfer() {
               </h6>
               <h6 className="mt-4 custom-card">
                 {" "}
-                Depot Staff:{" "}
+                MOR:{" "}
                 {Number(toDepotData.staff_avail) + fromselectedCurrentStaff}
               </h6>
             </Card.Body>
