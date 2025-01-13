@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useGlobalContext } from "../context/GlobalContext";
+import { UserContext } from "../context/UserContext";
+
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 function DepotMaster() {
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isDepotNameAvailable, setIsDepotNameAvailable] = useState(true);
+  const { desgs } = useGlobalContext();
+  const { user } = useContext(UserContext);
+
+  // console.log("user", user);
   const [formData, setFormData] = useState({
+    division_id: user?.division_id,
     depot_name: "",
     depot_fullname: "",
     depot_size: "",
@@ -20,9 +29,6 @@ function DepotMaster() {
     designationPosts: [], // Array to handle designation-wise posts and availability
   });
 
-  const [responseMessage, setResponseMessage] = useState("");
-  const [isDepotNameAvailable, setIsDepotNameAvailable] = useState(true);
-  const { desgs } = useGlobalContext(); // Fetching desgs from GlobalContext
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -130,6 +136,7 @@ function DepotMaster() {
         setResponseMessage("Depot added successfully!");
         // Reset form
         setFormData({
+          division_id: user.division_id,
           depot_name: "",
           depot_fullname: "",
           depot_size: "",
@@ -159,6 +166,55 @@ function DepotMaster() {
             Depot Information
           </Card.Title>
           <Form onSubmit={handleSubmit}>
+            <div className="row">
+              <div className="col-md-6 text-start">
+                {" "}
+                Zone
+                <Form.Control
+                  type="text"
+                  value={user.zone}
+                  placeholder="Disabled input"
+                  aria-label="Disabled input example"
+                  className="me-2"
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div className="col-md-6 text-start">
+                {" "}
+                Division
+                <Form.Control
+                  type="text"
+                  value={user.division}
+                  placeholder={user.division}
+                  aria-label="Disabled input example"
+                  className="me-2"
+                  disabled
+                  readOnly
+                />
+              </div>
+            </div>
+
+            <Form.Control
+              type="text"
+              value={user.zone_id}
+              placeholder="Disabled input"
+              aria-label="Disabled input example"
+              className="me-2"
+              hidden
+              readOnly
+            />
+
+            <Form.Control
+              type="text"
+              value={user.division_id}
+              placeholder="Disabled input"
+              aria-label="Disabled input example"
+              className="me-2"
+              hidden
+              readOnly
+            />
+
             <InputGroup className="mb-3">
               <InputGroup.Text>Code of Depot</InputGroup.Text>
               <Form.Control

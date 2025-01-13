@@ -20,6 +20,7 @@ import MutualTransferSearch from "./pages/MutualTransferSearch ";
 import MutualsearchRegistration from "./pages/MutualsearchRegistration";
 import BulkUpdatEmp from "./pages/BulkUpdatEmp";
 import SearchStaffPosition from "./pages/SearchStaffPosition";
+import Registration from "./pages/registration";
 
 import LogIn from "./pages/LogIn";
 
@@ -64,6 +65,7 @@ function App() {
             element={<SearchStaffPosition />}
           />
           <Route path="/LogIn" element={<LogIn />} />
+          <Route path="/RegistrationgIn" element={<Registration />} />
         </Routes>
       </Router>
     </div>

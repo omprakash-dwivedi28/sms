@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Form,
   Col,
@@ -14,6 +14,7 @@ import { FaEdit } from "react-icons/fa";
 
 import { useGlobalContext } from "../context/GlobalContext";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { UserContext } from "../context/UserContext";
 
 function EmpMaster() {
   const [formData, setFormData] = useState({
@@ -52,7 +53,10 @@ function EmpMaster() {
 
   const { depots, skills, subskills, gps, desgs, qualifications } =
     useGlobalContext();
+  const { user } = useContext(UserContext);
 
+  console.log("depots", depots);
+  console.log("user", user);
   const handleChange = async (e) => {
     const { name, value, checked } = e.target;
     if (name === "pf_no") {
@@ -398,14 +402,19 @@ function EmpMaster() {
                       className="custom-select"
                     >
                       <option value="">Select Depot</option>
-                      {depots?.map((depot) => (
-                        <option
-                          key={depot.depo_id}
-                          value={`${depot.depot_name}+${depot.depo_id}`}
-                        >
-                          {depot.depot_name}
-                        </option>
-                      ))}
+                      {depots
+                        ?.filter(
+                          (depot) =>
+                            Number(depot.division_id) === user.division_id
+                        )
+                        .map((depot) => (
+                          <option
+                            key={depot.depo_id}
+                            value={`${depot.depot_name}+${depot.depo_id}`}
+                          >
+                            {depot.depot_name}
+                          </option>
+                        ))}
                     </Form.Select>
                   </InputGroup>
 

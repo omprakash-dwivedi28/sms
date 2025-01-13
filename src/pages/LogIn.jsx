@@ -12,6 +12,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import Registration from "./registration";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -20,6 +21,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
   const [eyeOpen, setEyeOpen] = useState(false);
+
+  const [showRegistration, setShowRegistration] = useState(false);
 
   const navigate = useNavigate();
   const { updateUserData } = useContext(UserContext);
@@ -44,7 +47,7 @@ const Login = () => {
       if (data.success) {
         if (data.user && data.token) {
           updateUserData(data.user);
-          // console.log("updateUserData", data.user.name);
+          console.log("updateUserData", data);
           localStorage.setItem("sessionToken", data.token);
           navigate("/");
         } else {
@@ -61,13 +64,13 @@ const Login = () => {
     }
   };
 
+  const handleToggle = () => {
+    setShowRegistration((prev) => !prev);
+  };
   return (
-    <Container
-      fluid
-      className="d-flex justify-content-center align-items-center vh-100"
-    >
-      <Row>
-        <Col>
+    <div className="">
+      <div className="row d-flex justify-content-center ">
+        <div className={`col-md-6 `}>
           <Card className="p-4 shadow">
             <Card.Body>
               <h3 className="text-center mb-4">Login</h3>
@@ -124,9 +127,19 @@ const Login = () => {
               </form>
             </Card.Body>
           </Card>
-        </Col>
-      </Row>
-    </Container>
+        </div>
+
+        {showRegistration ? (
+          <div className="col-md-6">
+            <Registration />
+          </div>
+        ) : null}
+      </div>
+
+      <button className="btn btn-success" onClick={handleToggle}>
+        {showRegistration ? "Close Sign Up" : "Sign UP"}
+      </button>
+    </div>
   );
 };
 
