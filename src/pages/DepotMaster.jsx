@@ -10,25 +10,31 @@ import { UserContext } from "../context/UserContext";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Dropdown from "react-bootstrap/Dropdown";
 
 function DepotMaster() {
   const [responseMessage, setResponseMessage] = useState("");
   const [isDepotNameAvailable, setIsDepotNameAvailable] = useState(true);
-  const { desgs } = useGlobalContext();
+  const { desgs, sections } = useGlobalContext();
   const { user } = useContext(UserContext);
+  const [selectedSections, setSelectedSections] = useState([]);
 
   // console.log("user", user);
   const [formData, setFormData] = useState({
     division_id: user?.division_id,
     depot_name: "",
     depot_fullname: "",
+    section: "",
     depot_size: "",
     staff_capacity: 0,
     staff_avail: 0,
     staff_required: 0,
     designationPosts: [], // Array to handle designation-wise posts and availability
   });
-
+  const filteredSections =
+    sections?.filter(
+      (section) => Number(section.division_id) === user.division_id
+    ) || [];
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -49,6 +55,7 @@ function DepotMaster() {
         designationPosts: desgs.map((desg) => ({
           desg_id: desg.desg_id,
           desg_name: desg.desg_name,
+          category: desg.category,
           section_posts: 0,
           available_posts: 0,
         })),
@@ -65,6 +72,13 @@ function DepotMaster() {
     });
   };
 
+  const handleSectionChange = (e) => {
+    setSelectedSections(e.target.value);
+    setFormData({
+      ...formData,
+      section: e.target.value,
+    });
+  };
   // Automatically calculate staff capacity and required staff
   useEffect(() => {
     if (formData.designationPosts.length > 0) {
@@ -104,7 +118,7 @@ function DepotMaster() {
   };
 
   const handleSubmit = async (e) => {
-    // console.log("formData", formData);
+    console.log("formData", formData);
     e.preventDefault();
     if (!isDepotNameAvailable) {
       setResponseMessage(
@@ -123,7 +137,6 @@ function DepotMaster() {
       });
       const text = await response.text(); // Read response as text first
       let result;
-
       try {
         result = JSON.parse(text); // Try parsing the text as JSON
       } catch (error) {
@@ -140,12 +153,14 @@ function DepotMaster() {
           depot_name: "",
           depot_fullname: "",
           depot_size: "",
+          section: "",
           staff_capacity: 0,
           staff_avail: 0,
           staff_required: 0,
           designationPosts: desgs.map((desg) => ({
             desg_id: desg.desg_id,
             desg_name: desg.desg_name,
+            category: desg.category,
             section_posts: 0,
             available_posts: 0,
           })),
@@ -253,6 +268,23 @@ function DepotMaster() {
             </InputGroup>
 
             <InputGroup className="mb-3">
+              <Form.Select
+                aria-label="Select Section"
+                name="section"
+                value={selectedSections}
+                onChange={handleSectionChange}
+                className="custom-select"
+              >
+                <option value="">Select Section</option>
+                {filteredSections.map((section) => (
+                  <option key={section.id} value={section.section_name}>
+                    {section.section_name}
+                  </option>
+                ))}
+              </Form.Select>
+            </InputGroup>
+
+            <InputGroup className="mb-3">
               <InputGroup.Text>Total SS</InputGroup.Text>
               <Form.Control
                 name="staff_capacity"
@@ -291,6 +323,7 @@ function DepotMaster() {
                 <Col md={3}>
                   <strong>Designation</strong>
                 </Col>
+
                 <Col md={3}>
                   <strong>Sanctioned Strength</strong>
                 </Col>
@@ -302,13 +335,13 @@ function DepotMaster() {
                 </Col>
               </Row>
 
-              {/* Designation rows */}
               {formData.designationPosts.length > 0 &&
                 formData.designationPosts.map((desg, index) => (
                   <Row key={desg.desg_id} className="mb-12">
                     <Col md={3}>
                       <InputGroup.Text>{desg.desg_name}</InputGroup.Text>
                     </Col>
+
                     <Col md={3}>
                       <Form.Control
                         type="number"

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import { useGlobalContext } from "../context/GlobalContext";
+import { UserContext } from "../context/UserContext";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import Dropdown from "react-bootstrap/Dropdown";
 
@@ -20,9 +22,10 @@ function SearchStaffPosition() {
   const [selectedSections, setSelectedSections] = useState([]);
 
   const { depots, sections } = useGlobalContext();
+  const { user } = useContext(UserContext);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
 
-  // console.log("sections", sections);
+  console.log("sections", sections);
 
   useEffect(() => {
     if (employeeDetails && selectedDesg) {
@@ -30,6 +33,16 @@ function SearchStaffPosition() {
     }
   }, [selectedDesg, employeeDetails]);
 
+  const filteredDepots =
+    depots?.filter((depot) => Number(depot.division_id) === user.division_id) ||
+    [];
+
+  const filteredSections =
+    sections?.filter(
+      (section) => Number(section.division_id) === user.division_id
+    ) || [];
+
+  console.log("filteredSections", filteredSections);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -81,10 +94,10 @@ function SearchStaffPosition() {
 
   const handleDepotChange = (depotId) => {
     if (depotId === "all") {
-      if (selectedDepots.length === depots.length) {
+      if (selectedDepots.length === filteredDepots.length) {
         setSelectedDepots([]);
       } else {
-        setSelectedDepots(depots.map((depot) => depot.depo_id));
+        setSelectedDepots(filteredDepots.map((depot) => depot.depo_id));
       }
     } else {
       if (selectedDepots.includes(depotId)) {
@@ -98,10 +111,12 @@ function SearchStaffPosition() {
   const handleSectionChange = (sectionName) => {
     if (sectionName === "all") {
       // If "Select All" is clicked, toggle all sections
-      if (selectedSections.length === sections.length) {
+      if (selectedSections.length === filteredSections.length) {
         setSelectedSections([]); // Deselect all if all are already selected
       } else {
-        setSelectedSections(sections.map((section) => section.section_name)); // Select all sections
+        setSelectedSections(
+          filteredSections.map((section) => section.section_name)
+        ); // Select all sections
       }
     } else {
       // If a specific section is selected/deselected
@@ -235,16 +250,20 @@ function SearchStaffPosition() {
                   checked={selectedDepots.length === depots.length}
                   onChange={() => handleDepotChange("all")}
                 />
-                {depots.map((depot) => (
-                  <Form.Check
-                    key={depot.depo_id}
-                    type="checkbox"
-                    label={depot.depot_name}
-                    value={depot.depo_id}
-                    checked={selectedDepots.includes(depot.depo_id)}
-                    onChange={() => handleDepotChange(depot.depo_id)}
-                  />
-                ))}
+                {depots
+                  ?.filter(
+                    (depot) => Number(depot.division_id) === user.division_id
+                  )
+                  .map((depot) => (
+                    <Form.Check
+                      key={depot.depo_id}
+                      type="checkbox"
+                      label={depot.depot_name}
+                      value={depot.depo_id}
+                      checked={selectedDepots.includes(depot.depo_id)}
+                      onChange={() => handleDepotChange(depot.depo_id)}
+                    />
+                  ))}
               </Dropdown.Menu>
             </Dropdown>
 
@@ -261,7 +280,7 @@ function SearchStaffPosition() {
                   checked={selectedSections.length === sections.length}
                   onChange={() => handleSectionChange("all")}
                 />
-                {sections.map((section) => (
+                {filteredSections.map((section) => (
                   <Form.Check
                     key={section.id}
                     type="checkbox"

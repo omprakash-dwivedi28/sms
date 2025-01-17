@@ -17,7 +17,29 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { UserContext } from "../context/UserContext";
 
 function EmpMaster() {
+  const [selectedDepot, setSelectedDepot] = useState("");
+  const [selectedgp, setSelectedGP] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState("");
+  const [selectedDesg, setSelectedDesg] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isPFNoAvailable, setIsPFNoAvailable] = useState(true);
+  const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
+  const [selectededu, setSelectedEdu] = useState("");
+  const [filteredSubskills, setFilteredSubskills] = useState([]);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+
+  const { depots, skills, subskills, gps, desgs, qualifications } =
+    useGlobalContext();
+  const { user } = useContext(UserContext);
+
+  // console.log("depots", depots);
+  // console.log("user", user);
+
   const [formData, setFormData] = useState({
+    zone_id: user.zone_id,
+    division_id: user.division_id,
     depo_id: "",
     depot_name: "",
     emp_name: "",
@@ -35,28 +57,11 @@ function EmpMaster() {
     skills: [],
     exp: "",
     education: "",
+    category: "",
     achivment: "",
     otherEducation: "",
   });
 
-  const [selectedDepot, setSelectedDepot] = useState("");
-  const [selectedgp, setSelectedGP] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("");
-  const [selectedDesg, setSelectedDesg] = useState("");
-  const [responseMessage, setResponseMessage] = useState("");
-  const [isPFNoAvailable, setIsPFNoAvailable] = useState(true);
-  const [isHRMSNoAvailable, setIsHRMSNoAvailable] = useState(true);
-  const [selectededu, setSelectedEdu] = useState("");
-  const [filteredSubskills, setFilteredSubskills] = useState([]);
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-
-  const { depots, skills, subskills, gps, desgs, qualifications } =
-    useGlobalContext();
-  const { user } = useContext(UserContext);
-
-  console.log("depots", depots);
-  console.log("user", user);
   const handleChange = async (e) => {
     const { name, value, checked } = e.target;
     if (name === "pf_no") {
@@ -126,6 +131,12 @@ function EmpMaster() {
     } else {
       setResponseMessage("");
     }
+  };
+  const getUniqueCategories = (desgs) => {
+    return desgs.filter(
+      (desg, index, self) =>
+        self.findIndex((item) => item.category === desg.category) === index
+    );
   };
   const handleSubskillRatingChange = (subskill, rating, skillName) => {
     setFormData((prevData) => {
@@ -286,6 +297,14 @@ function EmpMaster() {
     });
   };
 
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    setFormData({
+      ...formData,
+      category: e.target.value,
+    });
+  };
+
   const calculateRetirementDate = (dob, doa) => {
     const dobDate = new Date(dob);
     const doaDate = new Date(doa);
@@ -393,6 +412,36 @@ function EmpMaster() {
                   Employee Information
                 </Card.Title>
                 <Form onSubmit={handleSubmit}>
+                  <div className="row">
+                    {/* Zone Input Field */}
+                    <div className="col-md-6 text-start">
+                      <label className="form-label">Zone</label>
+                      <Form.Control
+                        type="text"
+                        value={user.zone}
+                        placeholder="Disabled input"
+                        aria-label="Zone input field"
+                        className="me-2"
+                        disabled
+                        readOnly
+                      />
+                    </div>
+
+                    {/* Division Input Field */}
+                    <div className="col-md-6 text-start">
+                      <label className="form-label">Division</label>
+                      <Form.Control
+                        type="text"
+                        value={user.division}
+                        placeholder={user.division}
+                        aria-label="Division input field"
+                        className="me-2"
+                        disabled
+                        readOnly
+                      />
+                    </div>
+                  </div>
+
                   <InputGroup className="mb-3">
                     <Form.Select
                       aria-label="Select Depot"
@@ -564,6 +613,23 @@ function EmpMaster() {
                       {desgs?.map((desg) => (
                         <option key={desg.desg_id} value={desg.desg_name}>
                           {desg.desg_name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </InputGroup>
+                  <InputGroup className="mb-3">
+                    <Form.Select
+                      aria-label="Select Category"
+                      name="category"
+                      value={selectedCategory}
+                      onChange={handleCategoryChange}
+                      className="custom-select"
+                      required
+                    >
+                      <option value="">Select Category</option>
+                      {getUniqueCategories(desgs).map((desg) => (
+                        <option key={desg.desg_id} value={desg.category}>
+                          {desg.category}
                         </option>
                       ))}
                     </Form.Select>

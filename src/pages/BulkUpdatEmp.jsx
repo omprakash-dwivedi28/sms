@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useGlobalContext } from "../context/GlobalContext";
+import { UserContext } from "../context/UserContext";
 
 const BulkUpdatEmp = () => {
   const [depot, setDepots] = useState([]);
@@ -8,7 +9,7 @@ const BulkUpdatEmp = () => {
   const [loading, setLoading] = useState(false);
 
   const { depots } = useGlobalContext();
-
+  const { user } = useContext(UserContext);
   const fetchEmployees = async (depotName) => {
     setLoading(true);
     try {
@@ -94,12 +95,18 @@ const BulkUpdatEmp = () => {
             value={selectedDepot}
             onChange={handleDepotChange}
           >
+            {/* {console.log("depots", depots)} */}
+            {/* {console.log("user", user)} */}
             <option value="">--Select Depot--</option>
-            {depots.map((depot) => (
-              <option key={depot.depot_id} value={depot.depot_id}>
-                {depot.depot_name}
-              </option>
-            ))}
+            {depots
+              ?.filter(
+                (depot) => Number(depot.division_id) === user.division_id
+              )
+              .map((depot) => (
+                <option key={depot.depot_id} value={depot.depot_id}>
+                  {depot.depot_name}
+                </option>
+              ))}
           </select>
         </div>
       </div>

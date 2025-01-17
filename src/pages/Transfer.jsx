@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -6,6 +6,8 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useGlobalContext } from "../context/GlobalContext";
+import { UserContext } from "../context/UserContext";
+
 import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
@@ -42,7 +44,7 @@ function Transfer() {
   const [averageRating, setAverageRating] = useState(0);
   const [ToaverageRating, setToAverageRating] = useState(0);
   const [fromselectedCurrentStaff, setselectedfromCurrentStaff] = useState(0);
-
+  const { user } = useContext(UserContext);
   const handleToDepotChange = (e) => {
     // setSelectedToDepot(e.target.value);
 
@@ -363,11 +365,16 @@ function Transfer() {
                       onChange={handleFromDepotChange}
                     >
                       <option value="">Select Depot</option>
-                      {depots?.map((depot) => (
-                        <option key={depot.depo_id} value={depot.depo_id}>
-                          {depot.depot_name}
-                        </option>
-                      ))}
+                      {depots
+                        ?.filter(
+                          (depot) =>
+                            Number(depot.division_id) === user.division_id
+                        )
+                        .map((depot) => (
+                          <option key={depot.depo_id} value={depot.depo_id}>
+                            {depot.depot_name}
+                          </option>
+                        ))}
                     </Form.Select>
                   </InputGroup>
                   <h6>Employees</h6>
@@ -490,7 +497,7 @@ function Transfer() {
               <Card.Header className="custom-card-header">
                 Designation Wise Staff {selectedMetric} graph
               </Card.Header>
-              {console.log(chartData)}
+              {/* {console.log(chartData)} */}
               <Card.Body>
                 <Chart
                   chartType="Bar"
@@ -582,11 +589,16 @@ function Transfer() {
                       onChange={handleToDepotChange}
                     >
                       <option value="">Select Depot</option>
-                      {depots?.map((depot) => (
-                        <option key={depot.depo_id} value={depot.depo_id}>
-                          {depot.depot_name}
-                        </option>
-                      ))}
+                      {depots
+                        ?.filter(
+                          (depot) =>
+                            Number(depot.division_id) === user.division_id
+                        )
+                        .map((depot) => (
+                          <option key={depot.depo_id} value={depot.depo_id}>
+                            {depot.depot_name}
+                          </option>
+                        ))}
                     </Form.Select>
                   </InputGroup>
                   <h6>Employees</h6>
@@ -705,7 +717,7 @@ function Transfer() {
         <Col md={4}>
           <Card className="mt-4 custom-card">
             <Card.Header className="custom-card-header">
-              Before Transfer
+              {fromDepotEmployees[0]?.depot_name} Before Transfer
             </Card.Header>
             <Card.Body>
               {fromDepotData && (
@@ -750,7 +762,10 @@ function Transfer() {
           <Card bg="light" className="custom-card">
             <Card.Body>
               <h6 className="text-secondary mb-3">
-                <strong>Pin Pointing Position Table</strong>
+                <strong>
+                  {fromDepotEmployees[0]?.depot_name} Pin Pointing Position
+                  Table
+                </strong>
               </h6>
               <Container>
                 <Table responsive bordered hover className="text-center">
@@ -828,7 +843,7 @@ function Transfer() {
         <Col md={4}>
           <Card bg="light" className="custom-card">
             <Card.Header className="custom-card-header">
-              Before Transfer
+              {toDepotEmployees[0]?.depot_name} Before Transfer
             </Card.Header>
             <Card.Body>
               {toDepotData && (
@@ -872,7 +887,10 @@ function Transfer() {
           <Card bg="light" className="custom-card">
             <Card.Body>
               <h6 className="text-secondary mb-3">
-                <strong>Pin Pointing Position Table</strong>
+                <strong>
+                  {" "}
+                  {toDepotEmployees[0]?.depot_name} Pin Pointing Position Table
+                </strong>
               </h6>
               <Container>
                 <Table responsive bordered hover className="text-center">
