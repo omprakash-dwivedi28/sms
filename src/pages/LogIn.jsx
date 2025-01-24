@@ -33,7 +33,7 @@ const Login = () => {
     setMsg(null);
     try {
       const response = await fetch(
-        "https://railwaymcq.com/railwaymcq/RailPariksha/user_login_api.php",
+        "https://railwaymcq.com/railwaymcq/100YoRE/user_login_api.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
